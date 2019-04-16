@@ -96,14 +96,10 @@ class Round:
         self.setGameStates()
 
     def start(self):
-        print(self.state.dealer_id)
         if not self.bidding():
-            self.state.dealer_id = findLeftOfPlayer(self.state.dealer_id)
             return [0, 0]
         # bidding passed, no misdeal, game begins here
         self.play_tricks()
-
-        self.state.dealer_id = findLeftOfPlayer(self.state.dealer_id)
         return self.evaluate_scores()
 
     def play_tricks(self):
@@ -119,8 +115,7 @@ class Round:
             field.append(card_chosen)
             self.players[player].hand.remove(card_chosen)
             player = findLeftOfPlayer(player)
-        
-        
+
         # decide who won
         # append 1 to the trick count of that team
 
