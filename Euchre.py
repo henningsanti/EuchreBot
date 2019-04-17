@@ -107,17 +107,29 @@ class Round:
         for i in range(5):
             self.play_trick(player=player)
             player = findLeftOfPlayer(player)
-    
+
     def play_trick(self, player):
         field = []
         for i in range(4):
             card_chosen = self.players[player].play_card(field)
-            field.append(card_chosen)
+            field.append((player, card_chosen))
             self.players[player].hand.remove(card_chosen)
             player = findLeftOfPlayer(player)
 
         # decide who won
-        # append 1 to the trick count of that team
+        winning_card = field[0]
+        for card in field:
+            winning_card = self.compare_cards(a=winning_card, b=card, lead_suit=field[0][1].suit)
+
+        self.state.team_tricks[self.players[winning_card[0]].team] += 1
+
+        # Testing for trick mechanics
+        #print('Trump: ' + self.state.trump)
+        #print(field)
+        #print('Winning Card: ' + winning_card[1].__str__())
+        #print('Winning Player: ', winning_card[0])
+        #print('Winning Team: ', self.players[winning_card[0]].team)
+        #print(self.state.team_tricks)
 
     def bidding(self):
         top_card = self.dealer.deal_card()
@@ -133,7 +145,7 @@ class Round:
                 self.players[self.state.dealer_id].hand.remove(dealer_decision)
                 self.players[self.state.dealer_id].hand.append(top_card)
                 return True
-    
+
         bidder = findLeftOfPlayer(self.state.dealer_id)
         for i in range(4):
             bid_results = self.players[bidder].second_bid(top_card)
@@ -142,7 +154,7 @@ class Round:
             else:
                 self.state.trump = bid_results.trump
                 return True
-        
+
         return False
     #TODO: Figure out dependencies and implement
     def evaluate_scores(self):
@@ -151,6 +163,101 @@ class Round:
     def setGameStates(self):
         for player in self.players:
             player.game_state = self.state
+
+    def compare_cards(self, a, b, lead_suit):
+        card1 = a[1]
+        card2 = b[1]
+
+        if card1.suit == card2.suit:
+            if card1.suit == self.state.trump:
+                return self.compare_trumps(a, b)
+
+            else:
+                if self.is_lefty(card1):
+                    return a
+                elif self.is_lefty(card2):
+                    return b
+                else:
+                    return self.compare_non_trump(a, b, lead_suit)
+
+        else:
+            if card1.suit == self.state.trump and not self.is_lefty(card2):
+                return a
+
+            elif card2.suit == self.state.trump and not self.is_lefty(card1):
+                return b
+
+            elif card1.suit == self.state.trump and self.is_lefty(card2):
+                if card1.value == 'J':
+                    return a
+                else:
+                    return b
+
+            elif card2.suit == self.state.trump and self.is_lefty(card1):
+                if card2.value == 'J':
+                    return b
+                else:
+                    return a
+
+            else:
+                if self.is_lefty(card1):
+                    return a
+                elif self.is_lefty(card2):
+                    return b
+                else:
+                    return self.compare_non_trump(a, b, lead_suit)
+
+    def compare_trumps(self, a, b):
+        card1 = a[1]
+        card2 = b[1]
+
+        hierarchy = {'J': 5,
+                     'A': 4,
+                     'K': 3,
+                     'Q': 2,
+                     'T': 1,
+                     '9': 0}
+
+        return a if hierarchy[card1.value] > hierarchy[card2.value] else b
+
+    def compare_non_trump(self, a, b, lead_suit):
+        card1 = a[1]
+        card2 = b[1]
+
+        if not card1.suit == lead_suit:
+            return b
+
+        elif not card2.suit == lead_suit:
+            return a
+
+        else:
+
+            hierarchy = {'A': 5,
+                         'K': 4,
+                         'Q': 3,
+                         'J': 2,
+                         'T': 1,
+                         '9': 0}
+
+            return a if hierarchy[card1.value] > hierarchy[card2.value] else b
+
+    def is_lefty(self, card):
+        if card.value == 'J':
+            if self.state.trump == 'd':
+                return card.suit == 'h'
+
+            elif self.state.trump == 'h':
+                return card.suit == 'd'
+
+            elif self.state.trump == 's':
+                return card.suit == 'c'
+
+            else:
+                return card.suit == 's'
+
+        else:
+            return False
+
 
 class Match:
     def __init__(self):
@@ -172,7 +279,7 @@ class Match:
     def play_round(self):
         round = Round(players=self.players, dealer_id=self.dealer_id)
         return round.start()
-    
+
     def check_end(self):
         if self.team_scores[0] >= 10:
             print('Team 0 won')
