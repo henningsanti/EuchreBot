@@ -1,13 +1,16 @@
 import random
 
 class Card:
-
     def __init__(self, value=None, suit=None):
         self.value = value
         self.suit = suit
 
-class Dealer:
+    def __str__(self):
+        return self.value + ' ' + self.suit
 
+    __repr__ = __str__
+
+class Dealer:
     def __init__(self):
         ''' Initialization...
 
@@ -54,37 +57,241 @@ class Dealer:
             for i in range(5):
                 player.hand.append(self.deal_card())
 
-    def shuffle_deck(self):
-        random.shuffle(self)
-
-
 class Player:
-
-    def __init__(self, id=None, team=None):
-
+    def __init__(self, id, team):
         self.id = id
         self.team = team
         self.hand = []
+        self.game_state = None
+
+    def bid(self, top_card):
+        return False
+
+    def second_bid(self, top_card):
+        return SecondBidDecision(True, 'd')
+
+    def swap_card(self):
+        return self.hand[0]
+
+    def play_card(self, field):
+        return self.hand[0]
+
+class GameState:
+    def __init__(self, dealer_id):
+        self.dealer_id = dealer_id
+        self.team_tricks = [0, 0]
+        self.trump = None
+
+class SecondBidDecision:
+    def __init__(self, selected, trump=None):
+        self.selected = selected
+        self.trump= trump
 
 class Round:
-
-    def __init__(self, players):
+    def __init__(self, players, dealer_id):
         self.players = players
         self.dealer = Dealer()
         self.dealer.deal(players=self.players)
+        self.state = GameState(dealer_id)
+        self.setGameStates()
 
-    def play_round(self):
-        return [10,1]
+    def start(self):
+        if not self.bidding():
+            return [0, 0]
+        # bidding passed, no misdeal, game begins here
+        self.play_tricks()
+        return self.evaluate_scores()
+
+    def play_tricks(self):
+        player = findLeftOfPlayer(self.state.dealer_id)
+        for i in range(5):
+            self.play_trick(player=player)
+            player = findLeftOfPlayer(player)
+
+    def play_trick(self, player):
+        field = []
+        for i in range(4):
+            card_chosen = self.players[player].play_card(field)
+            field.append((player, card_chosen))
+            self.players[player].hand.remove(card_chosen)
+            player = findLeftOfPlayer(player)
+
+        # decide who won
+        winning_card = field[0]
+        for card in field:
+            winning_card = self.compare_cards(a=winning_card, b=card, lead_suit=field[0][1].suit)
+
+        self.state.team_tricks[self.players[winning_card[0]].team] += 1
+
+        # Testing for trick mechanics
+        #print('Trump: ' + self.state.trump)
+        #print(field)
+        #print('Winning Card: ' + winning_card[1].__str__())
+        #print('Winning Player: ', winning_card[0])
+        #print('Winning Team: ', self.players[winning_card[0]].team)
+        #print(self.state.team_tricks)
+
+    def bidding(self):
+        top_card = self.dealer.deal_card()
+        bidder = findLeftOfPlayer(self.state.dealer_id)
+        for i in range(4):
+            bid_result = self.players[bidder].bid(top_card)
+            if not bid_result:
+                bidder =  findLeftOfPlayer(bidder)
+            else:
+                self.state.trump = top_card.suit
+                dealer_decision = self.players[self.state.dealer_id].swap_card()
+
+                self.players[self.state.dealer_id].hand.remove(dealer_decision)
+                self.players[self.state.dealer_id].hand.append(top_card)
+                return True
+
+        bidder = findLeftOfPlayer(self.state.dealer_id)
+        for i in range(4):
+            bid_results = self.players[bidder].second_bid(top_card)
+            if not bid_results.selected:
+                bidder = findLeftOfPlayer(bidder)
+            else:
+                self.state.trump = bid_results.trump
+                return True
+
+        return False
+    #TODO: Figure out dependencies and implement
+    def evaluate_scores(self):
+        return [2,1]
+
+    def setGameStates(self):
+        for player in self.players:
+            player.game_state = self.state
+
+    def compare_cards(self, a, b, lead_suit):
+        card1 = a[1]
+        card2 = b[1]
+
+        if card1.suit == card2.suit:
+            if card1.suit == self.state.trump:
+                return self.compare_trumps(a, b)
+
+            else:
+                if self.is_lefty(card1):
+                    return a
+                elif self.is_lefty(card2):
+                    return b
+                else:
+                    return self.compare_non_trump(a, b, lead_suit)
+
+        else:
+            if card1.suit == self.state.trump and not self.is_lefty(card2):
+                return a
+
+            elif card2.suit == self.state.trump and not self.is_lefty(card1):
+                return b
+
+            elif card1.suit == self.state.trump and self.is_lefty(card2):
+                if card1.value == 'J':
+                    return a
+                else:
+                    return b
+
+            elif card2.suit == self.state.trump and self.is_lefty(card1):
+                if card2.value == 'J':
+                    return b
+                else:
+                    return a
+
+            else:
+                if self.is_lefty(card1):
+                    return a
+                elif self.is_lefty(card2):
+                    return b
+                else:
+                    return self.compare_non_trump(a, b, lead_suit)
+
+    def compare_trumps(self, a, b):
+        card1 = a[1]
+        card2 = b[1]
+
+        hierarchy = {'J': 5,
+                     'A': 4,
+                     'K': 3,
+                     'Q': 2,
+                     'T': 1,
+                     '9': 0}
+
+        return a if hierarchy[card1.value] > hierarchy[card2.value] else b
+
+    def compare_non_trump(self, a, b, lead_suit):
+        card1 = a[1]
+        card2 = b[1]
+
+        if not card1.suit == lead_suit:
+            return b
+
+        elif not card2.suit == lead_suit:
+            return a
+
+        else:
+
+            hierarchy = {'A': 5,
+                         'K': 4,
+                         'Q': 3,
+                         'J': 2,
+                         'T': 1,
+                         '9': 0}
+
+            return a if hierarchy[card1.value] > hierarchy[card2.value] else b
+
+    def is_lefty(self, card):
+        if card.value == 'J':
+            if self.state.trump == 'd':
+                return card.suit == 'h'
+
+            elif self.state.trump == 'h':
+                return card.suit == 'd'
+
+            elif self.state.trump == 's':
+                return card.suit == 'c'
+
+            else:
+                return card.suit == 's'
+
+        else:
+            return False
+
 
 class Match:
-
     def __init__(self):
         self.players = [Player(id=0,team=0), Player(id=1,team=1), Player(id=2,team=0), Player(id=3,team=1)]
         self.team_scores = [0,0]
-        results = self.play_round()
-        self.team_scores[0] += results[0]
-        self.team_scores[1] += results[1]
+        self.dealer_id = 0
+
+    def start_match(self):
+        while True:
+            results = self.play_round()
+            self.team_scores[0] += results[0]
+            self.team_scores[1] += results[1]
+
+            if(self.check_end()):
+                return
+
+            self.dealer_id = findLeftOfPlayer(self.dealer_id)
 
     def play_round(self):
-        round = Round(players=self.players)
-        return round.play_round()
+        round = Round(players=self.players, dealer_id=self.dealer_id)
+        return round.start()
+
+    def check_end(self):
+        if self.team_scores[0] >= 10:
+            print('Team 0 won')
+            return True
+        elif self.team_scores[1] >= 10:
+            print('Team 1 won')
+            return True
+        else:
+            return False
+
+def findLeftOfPlayer(id):
+        if id == 3:
+            return 0
+        else:
+            return id + 1
