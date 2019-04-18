@@ -65,10 +65,10 @@ class Player:
         self.game_state = None
 
     def bid(self, top_card):
-        return BidDecision(True, True)
+        return BidDecision(False, False)
 
     def second_bid(self, top_card):
-        return SecondBidDecision(True, 'd')
+        return SecondBidDecision(True, 'd', True)
 
     def swap_card(self):
         return self.hand[0]
@@ -82,6 +82,7 @@ class GameState:
         self.team_tricks = [0, 0]
         self.trump = None
         self.alone = None
+        self.making_team = None
 
 class BidDecision:
     def __init__(self, bid, alone):
@@ -89,9 +90,10 @@ class BidDecision:
         self.alone = alone
 
 class SecondBidDecision:
-    def __init__(self, selected, trump=None):
+    def __init__(self, selected, trump, alone):
         self.selected = selected
-        self.trump= trump
+        self.trump = trump
+        self.alone = alone
 
 class Round:
     def __init__(self, players, dealer_id):
@@ -129,14 +131,16 @@ class Round:
 
         self.state.team_tricks[self.players[winning_card[0]].team] += 1
 
-        # Testing for trick mechanics
-        print('Trump: ' + self.state.trump)
-        print(field)
-        print('Winning Card: ' + winning_card[1].__str__())
-        print('Winning Player: ', winning_card[0])
-        print('Winning Team: ', self.players[winning_card[0]].team)
-        print(self.state.team_tricks)
-        print('Alone:', self.state.alone)
+        # # Testing for trick mechanics
+        # print('Trump: ' + self.state.trump)
+        # print(field)
+        # print('Winning Card: ' + winning_card[1].__str__())
+        # print('Winning Player: ', winning_card[0])
+        # print('Winning Team: ', self.players[winning_card[0]].team)
+        # print(self.state.team_tricks)
+        # print('Alone:', self.state.alone)
+        # print('Making team:', self.state.making_team)
+
         return winning_card[0]
 
     def bidding(self):
@@ -147,6 +151,7 @@ class Round:
             if not bid_result.bid:
                 bidder =  findLeftOfPlayer(bidder)
             else:
+                self.state.making_team = self.players[bidder].team
                 if bid_result.alone:
                     self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
                 self.state.trump = top_card.suit
@@ -162,11 +167,14 @@ class Round:
             if not bid_results.selected:
                 bidder = findLeftOfPlayer(bidder)
             else:
+                if bid_results.alone:
+                    self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
+                self.state.making_team = self.players[bidder].team
                 self.state.trump = bid_results.trump
                 return True
 
         return False
-    #TODO: Figure out dependencies and implement
+    #TODO: Implement
     def evaluate_scores(self):
         return [2,1]
 
