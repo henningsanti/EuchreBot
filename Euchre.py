@@ -65,7 +65,7 @@ class Player:
         self.game_state = None
 
     def bid(self, top_card):
-        return False
+        return BidDecision(True, True)
 
     def second_bid(self, top_card):
         return SecondBidDecision(True, 'd')
@@ -81,6 +81,12 @@ class GameState:
         self.dealer_id = dealer_id
         self.team_tricks = [0, 0]
         self.trump = None
+        self.alone = None
+
+class BidDecision:
+    def __init__(self, bid, alone):
+        self.bid = bid
+        self.alone = alone
 
 class SecondBidDecision:
     def __init__(self, selected, trump=None):
@@ -103,19 +109,19 @@ class Round:
         return self.evaluate_scores()
 
     def play_tricks(self):
-        player = findLeftOfPlayer(self.state.dealer_id)
+        player_id = findLeftOfPlayer(self.state.dealer_id, self.state.alone)
         for i in range(5):
-            self.play_trick(player=player)
-            player = findLeftOfPlayer(player)
+            player_id = self.play_trick(player_id=player_id)
 
-    def play_trick(self, player):
+    def play_trick(self, player_id):
         field = []
-        for i in range(4):
-            card_chosen = self.players[player].play_card(field)
-            field.append((player, card_chosen))
-            self.players[player].hand.remove(card_chosen)
-            player = findLeftOfPlayer(player)
+        length = 4 if self.state.alone == None else 3
 
+        for i in range(length):
+            card_chosen = self.players[player_id].play_card(field)
+            field.append((player_id, card_chosen))
+            self.players[player_id].hand.remove(card_chosen)
+            player_id = findLeftOfPlayer(player_id, self.state.alone)
         # decide who won
         winning_card = field[0]
         for card in field:
@@ -124,21 +130,25 @@ class Round:
         self.state.team_tricks[self.players[winning_card[0]].team] += 1
 
         # Testing for trick mechanics
-        #print('Trump: ' + self.state.trump)
-        #print(field)
-        #print('Winning Card: ' + winning_card[1].__str__())
-        #print('Winning Player: ', winning_card[0])
-        #print('Winning Team: ', self.players[winning_card[0]].team)
-        #print(self.state.team_tricks)
+        print('Trump: ' + self.state.trump)
+        print(field)
+        print('Winning Card: ' + winning_card[1].__str__())
+        print('Winning Player: ', winning_card[0])
+        print('Winning Team: ', self.players[winning_card[0]].team)
+        print(self.state.team_tricks)
+        print('Alone:', self.state.alone)
+        return winning_card[0]
 
     def bidding(self):
         top_card = self.dealer.deal_card()
         bidder = findLeftOfPlayer(self.state.dealer_id)
         for i in range(4):
             bid_result = self.players[bidder].bid(top_card)
-            if not bid_result:
+            if not bid_result.bid:
                 bidder =  findLeftOfPlayer(bidder)
             else:
+                if bid_result.alone:
+                    self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
                 self.state.trump = top_card.suit
                 dealer_decision = self.players[self.state.dealer_id].swap_card()
 
@@ -290,8 +300,14 @@ class Match:
         else:
             return False
 
-def findLeftOfPlayer(id):
-        if id == 3:
-            return 0
+def findLeftOfPlayer(id, removed_id=None):
+        if removed_id == None:
+            if id == 3:
+                return 0
+            else:
+                return id + 1
         else:
-            return id + 1
+            if removed_id == findLeftOfPlayer(id):
+                return findLeftOfPlayer(removed_id)
+            else:
+                return findLeftOfPlayer(id)
