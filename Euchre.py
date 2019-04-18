@@ -14,18 +14,6 @@ class Card:
 
 class Dealer:
     def __init__(self):
-        ''' Initialization...
-
-            PARAMETERS:
-
-                None
-
-            RETURNS:
-
-                Dealer object
-
-            '''
-
         c_values = ['A',
                     'K',
                     'Q',
@@ -50,7 +38,6 @@ class Dealer:
             return card
 
         else:
-            print("No more cards in deck.")
             return None
 
     def deal(self, players):
@@ -70,7 +57,6 @@ class Round:
     def start(self):
         if not self.bidding():
             return [0, 0]
-        # bidding passed, no misdeal, game begins here
         self.play_tricks()
         return self.evaluate_scores()
 
@@ -88,28 +74,18 @@ class Round:
             field.append((player_id, card_chosen))
             self.players[player_id].hand.remove(card_chosen)
             player_id = findLeftOfPlayer(player_id, self.state.alone)
-        # decide who won
+
         winning_card = field[0]
         for card in field:
             winning_card = self.compare_cards(a=winning_card, b=card, lead_suit=field[0][1].suit)
 
         self.state.team_tricks[self.players[winning_card[0]].team] += 1
-
-        # Testing for trick mechanics
-        print('Trump: ' + self.state.trump)
-        print(field)
-        print('Winning Card: ' + winning_card[1].__str__())
-        print('Winning Player: ', winning_card[0])
-        print('Winning Team: ', self.players[winning_card[0]].team)
-        print(self.state.team_tricks)
-        print('Alone:', self.state.alone)
-        print('Making team:', self.state.making_team)
-
         return winning_card[0]
 
     def bidding(self):
         top_card = self.dealer.deal_card()
         bidder = findLeftOfPlayer(self.state.dealer_id)
+
         for i in range(4):
             bid_result = self.players[bidder].bid(top_card)
             if not bid_result.bid:
@@ -126,6 +102,7 @@ class Round:
                 return True
 
         bidder = findLeftOfPlayer(self.state.dealer_id)
+
         for i in range(4):
             bid_results = self.players[bidder].second_bid(top_card)
             if not bid_results.selected:
@@ -138,9 +115,23 @@ class Round:
                 return True
 
         return False
-    #TODO: Implement
+
     def evaluate_scores(self):
-        return [2,1]
+
+        scores = [0, 0]
+        winning_team = 0 if self.state.team_tricks[0] > self.state.team_tricks[1] else 1
+        tricks_won = self.state.team_tricks[winning_team]
+
+        if not winning_team == self.state.making_team:
+            scores[winning_team] += 2
+
+        else:
+            if not self.state.alone == None:
+                scores[winning_team] += 1 if tricks_won < 5 else 4
+            else:
+                scores[winning_team] += 1 if tricks_won < 5 else 2
+
+        return scores
 
     def setGameStates(self):
         for player in self.players:
@@ -240,7 +231,6 @@ class Round:
         else:
             return False
 
-
 class Match:
     def __init__(self):
         self.players = [Player(id=0,team=0), Player(id=1,team=1), Player(id=2,team=0), Player(id=3,team=1)]
@@ -253,6 +243,9 @@ class Match:
             self.team_scores[0] += results[0]
             self.team_scores[1] += results[1]
 
+            print('Current Score: ', self.team_scores)
+            print()
+
             if(self.check_end()):
                 return
 
@@ -264,10 +257,10 @@ class Match:
 
     def check_end(self):
         if self.team_scores[0] >= 10:
-            print('Team 0 won')
+            print('\nTEAM 0 WINS MATCH')
             return True
         elif self.team_scores[1] >= 10:
-            print('Team 1 won')
+            print('\nTEAM 1 WINS MATCH')
             return True
         else:
             return False
