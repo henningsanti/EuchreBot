@@ -1,4 +1,6 @@
 import random
+from Player import Player
+from Model import *
 
 class Card:
     def __init__(self, value=None, suit=None):
@@ -57,44 +59,6 @@ class Dealer:
             for i in range(5):
                 player.hand.append(self.deal_card())
 
-class Player:
-    def __init__(self, id, team):
-        self.id = id
-        self.team = team
-        self.hand = []
-        self.game_state = None
-
-    def bid(self, top_card):
-        return BidDecision(False, False)
-
-    def second_bid(self, top_card):
-        return SecondBidDecision(True, 'd', True)
-
-    def swap_card(self):
-        return self.hand[0]
-
-    def play_card(self, field):
-        return self.hand[0]
-
-class GameState:
-    def __init__(self, dealer_id):
-        self.dealer_id = dealer_id
-        self.team_tricks = [0, 0]
-        self.trump = None
-        self.alone = None
-        self.making_team = None
-
-class BidDecision:
-    def __init__(self, bid, alone):
-        self.bid = bid
-        self.alone = alone
-
-class SecondBidDecision:
-    def __init__(self, selected, trump, alone):
-        self.selected = selected
-        self.trump = trump
-        self.alone = alone
-
 class Round:
     def __init__(self, players, dealer_id):
         self.players = players
@@ -131,15 +95,15 @@ class Round:
 
         self.state.team_tricks[self.players[winning_card[0]].team] += 1
 
-        # # Testing for trick mechanics
-        # print('Trump: ' + self.state.trump)
-        # print(field)
-        # print('Winning Card: ' + winning_card[1].__str__())
-        # print('Winning Player: ', winning_card[0])
-        # print('Winning Team: ', self.players[winning_card[0]].team)
-        # print(self.state.team_tricks)
-        # print('Alone:', self.state.alone)
-        # print('Making team:', self.state.making_team)
+        # Testing for trick mechanics
+        print('Trump: ' + self.state.trump)
+        print(field)
+        print('Winning Card: ' + winning_card[1].__str__())
+        print('Winning Player: ', winning_card[0])
+        print('Winning Team: ', self.players[winning_card[0]].team)
+        print(self.state.team_tricks)
+        print('Alone:', self.state.alone)
+        print('Making team:', self.state.making_team)
 
         return winning_card[0]
 
