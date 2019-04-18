@@ -65,10 +65,10 @@ class Player:
         self.game_state = None
 
     def bid(self, top_card):
-        return False
+        return BidDecision(bid=False, alone=False)
 
     def second_bid(self, top_card):
-        return SecondBidDecision(True, 'd')
+        return SecondBidDecision(selected=True, trump='d', alone=False)
 
     def swap_card(self):
         return self.hand[0]
@@ -81,11 +81,19 @@ class GameState:
         self.dealer_id = dealer_id
         self.team_tricks = [0, 0]
         self.trump = None
+        self.alone = None
+        self.making_team = None
+
+class BidDecision:
+    def __init__(self, bid, alone):
+        self.bid = bid
+        self.alone = alone
 
 class SecondBidDecision:
-    def __init__(self, selected, trump=None):
+    def __init__(self, selected, trump, alone):
         self.selected = selected
-        self.trump= trump
+        self.trump = trump
+        self.alone = alone
 
 class Round:
     def __init__(self, players, dealer_id):
@@ -103,19 +111,19 @@ class Round:
         return self.evaluate_scores()
 
     def play_tricks(self):
-        player = findLeftOfPlayer(self.state.dealer_id)
+        player_id = findLeftOfPlayer(self.state.dealer_id, self.state.alone)
         for i in range(5):
-            self.play_trick(player=player)
-            player = findLeftOfPlayer(player)
+            player_id = self.play_trick(player_id=player_id)
 
-    def play_trick(self, player):
+    def play_trick(self, player_id):
         field = []
-        for i in range(4):
-            card_chosen = self.players[player].play_card(field)
-            field.append((player, card_chosen))
-            self.players[player].hand.remove(card_chosen)
-            player = findLeftOfPlayer(player)
+        length = 4 if self.state.alone == None else 3
 
+        for i in range(length):
+            card_chosen = self.players[player_id].play_card(field)
+            field.append((player_id, card_chosen))
+            self.players[player_id].hand.remove(card_chosen)
+            player_id = findLeftOfPlayer(player_id, self.state.alone)
         # decide who won
         winning_card = field[0]
         for card in field:
@@ -123,22 +131,30 @@ class Round:
 
         self.state.team_tricks[self.players[winning_card[0]].team] += 1
 
-        # Testing for trick mechanics
-        #print('Trump: ' + self.state.trump)
-        #print(field)
-        #print('Winning Card: ' + winning_card[1].__str__())
-        #print('Winning Player: ', winning_card[0])
-        #print('Winning Team: ', self.players[winning_card[0]].team)
-        #print(self.state.team_tricks)
+        # # Testing for trick mechanics
+        # print('Trump: ' + self.state.trump)
+        # print(field)
+        # print('Winning Card: ' + winning_card[1].__str__())
+        # print('Winning Player: ', winning_card[0])
+        # print('Winning Team: ', self.players[winning_card[0]].team)
+        # print(self.state.team_tricks)
+        # print('Alone:', self.state.alone)
+        # print('Making team:', self.state.making_team)
+        # print()
+
+        return winning_card[0]
 
     def bidding(self):
         top_card = self.dealer.deal_card()
         bidder = findLeftOfPlayer(self.state.dealer_id)
         for i in range(4):
             bid_result = self.players[bidder].bid(top_card)
-            if not bid_result:
+            if not bid_result.bid:
                 bidder =  findLeftOfPlayer(bidder)
             else:
+                self.state.making_team = self.players[bidder].team
+                if bid_result.alone:
+                    self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
                 self.state.trump = top_card.suit
                 dealer_decision = self.players[self.state.dealer_id].swap_card()
 
@@ -152,13 +168,46 @@ class Round:
             if not bid_results.selected:
                 bidder = findLeftOfPlayer(bidder)
             else:
+                if bid_results.alone:
+                    self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
+                self.state.making_team = self.players[bidder].team
                 self.state.trump = bid_results.trump
                 return True
 
         return False
-    #TODO: Figure out dependencies and implement
+
     def evaluate_scores(self):
-        return [2,1]
+        # Initialize zero scores
+        scores = [0, 0]
+
+        # Get winning team and the number of tricks they won
+        winning_team = 0 if self.state.team_tricks[0] > self.state.team_tricks[1] else 1
+        tricks_won = self.state.team_tricks[winning_team]
+
+        # Case 1: Winning team is defending team
+        if not winning_team == self.state.making_team:
+            print('------ Defenders win! ------')
+            scores[winning_team] += 2 # Defender always gets 2 points
+
+        # Case 2: Winning team is making team
+        else:
+            print('------ Makers win! ------')
+            # Case 2.1: Winning team making and alone
+            if not self.state.alone == None:
+                scores[winning_team] += 1 if tricks_won < 5 else 4
+
+            # Case 2.2: Winning team making and NOT alone
+            else:
+                scores[winning_team] += 1 if tricks_won < 5 else 2
+
+        # Some print statements for testing... Comment out "Alone" line if go alone set to false in Player.bid()
+        print('Making team:', self.state.making_team)
+        print('Winning team:', winning_team)
+        # print('Alone Team? ', self.players[self.state.alone].team)
+        print('Tricks won: ', tricks_won)
+        print('Points awarded: ', scores[winning_team])
+
+        return scores
 
     def setGameStates(self):
         for player in self.players:
@@ -271,6 +320,9 @@ class Match:
             self.team_scores[0] += results[0]
             self.team_scores[1] += results[1]
 
+            print('Current Score: ', self.team_scores)
+            print()
+            
             if(self.check_end()):
                 return
 
@@ -282,16 +334,22 @@ class Match:
 
     def check_end(self):
         if self.team_scores[0] >= 10:
-            print('Team 0 won')
+            print('\nTEAM 0 WINS MATCH')
             return True
         elif self.team_scores[1] >= 10:
-            print('Team 1 won')
+            print('\nTEAM 1 WINS MATCH')
             return True
         else:
             return False
 
-def findLeftOfPlayer(id):
-        if id == 3:
-            return 0
+def findLeftOfPlayer(id, removed_id=None):
+        if removed_id == None:
+            if id == 3:
+                return 0
+            else:
+                return id + 1
         else:
-            return id + 1
+            if removed_id == findLeftOfPlayer(id):
+                return findLeftOfPlayer(removed_id)
+            else:
+                return findLeftOfPlayer(id)
