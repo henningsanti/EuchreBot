@@ -65,10 +65,10 @@ class Player:
         self.game_state = None
 
     def bid(self, top_card):
-        return BidDecision(False, False)
+        return BidDecision(bid=False, alone=False)
 
     def second_bid(self, top_card):
-        return SecondBidDecision(True, 'd', True)
+        return SecondBidDecision(selected=True, trump='d', alone=False)
 
     def swap_card(self):
         return self.hand[0]
@@ -140,6 +140,7 @@ class Round:
         # print(self.state.team_tricks)
         # print('Alone:', self.state.alone)
         # print('Making team:', self.state.making_team)
+        # print()
 
         return winning_card[0]
 
@@ -174,9 +175,39 @@ class Round:
                 return True
 
         return False
-    #TODO: Implement
+
     def evaluate_scores(self):
-        return [2,1]
+        # Initialize zero scores
+        scores = [0, 0]
+
+        # Get winning team and the number of tricks they won
+        winning_team = 0 if self.state.team_tricks[0] > self.state.team_tricks[1] else 1
+        tricks_won = self.state.team_tricks[winning_team]
+
+        # Case 1: Winning team is defending team
+        if not winning_team == self.state.making_team:
+            print('------ Defenders win! ------')
+            scores[winning_team] += 2 # Defender always gets 2 points
+
+        # Case 2: Winning team is making team
+        else:
+            print('------ Makers win! ------')
+            # Case 2.1: Winning team making and alone
+            if not self.state.alone == None:
+                scores[winning_team] += 1 if tricks_won < 5 else 4
+
+            # Case 2.2: Winning team making and NOT alone
+            else:
+                scores[winning_team] += 1 if tricks_won < 5 else 2
+
+        # Some print statements for testing... Comment out "Alone" line if go alone set to false in Player.bid()
+        print('Making team:', self.state.making_team)
+        print('Winning team:', winning_team)
+        # print('Alone Team? ', self.players[self.state.alone].team)
+        print('Tricks won: ', tricks_won)
+        print('Points awarded: ', scores[winning_team])
+
+        return scores
 
     def setGameStates(self):
         for player in self.players:
@@ -289,6 +320,9 @@ class Match:
             self.team_scores[0] += results[0]
             self.team_scores[1] += results[1]
 
+            print('Current Score: ', self.team_scores)
+            print()
+            
             if(self.check_end()):
                 return
 
@@ -300,10 +334,10 @@ class Match:
 
     def check_end(self):
         if self.team_scores[0] >= 10:
-            print('Team 0 won')
+            print('\nTEAM 0 WINS MATCH')
             return True
         elif self.team_scores[1] >= 10:
-            print('Team 1 won')
+            print('\nTEAM 1 WINS MATCH')
             return True
         else:
             return False
