@@ -1,6 +1,7 @@
 import random
 from Player import Player
 from Model import *
+from GUIPlayer import GUIPlayer as GP
 
 class Card:
     def __init__(self, value=None, suit=None):
@@ -75,6 +76,7 @@ class Round:
             self.players[player_id].hand.remove(card_chosen)
             player_id = findLeftOfPlayer(player_id, self.state.alone)
 
+        print(field)
         winning_card = field[0]
         for card in field:
             winning_card = self.compare_cards(a=winning_card, b=card, lead_suit=field[0][1].suit)
@@ -92,6 +94,7 @@ class Round:
                 bidder =  findLeftOfPlayer(bidder)
             else:
                 self.state.making_team = self.players[bidder].team
+                print(self.state.making_team)
                 if bid_result.alone:
                     self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
                 self.state.trump = top_card.suit
@@ -117,7 +120,6 @@ class Round:
         return False
 
     def evaluate_scores(self):
-
         scores = [0, 0]
         winning_team = 0 if self.state.team_tricks[0] > self.state.team_tricks[1] else 1
         tricks_won = self.state.team_tricks[winning_team]
@@ -233,7 +235,7 @@ class Round:
 
 class Match:
     def __init__(self):
-        self.players = [Player(id=0,team=0), Player(id=1,team=1), Player(id=2,team=0), Player(id=3,team=1)]
+        self.players = [GP(id=0,team=0), Player(id=1,team=1), Player(id=2,team=0), Player(id=3,team=1)]
         self.team_scores = [0,0]
         self.dealer_id = 0
 
