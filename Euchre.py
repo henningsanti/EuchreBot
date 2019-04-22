@@ -249,7 +249,7 @@ class Match:
             print()
 
             if(self.check_end()):
-                return
+                self.manager.render_game_win()
 
             self.dealer_id = findLeftOfPlayer(self.dealer_id)
 
