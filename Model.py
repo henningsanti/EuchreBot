@@ -1,7 +1,8 @@
 class GameState:
-    def __init__(self, dealer_id):
+    def __init__(self, dealer_id, team_scores):
         self.dealer_id = dealer_id
         self.team_tricks = [0, 0]
+        self.team_scores = team_scores
         self.trump = None
         self.alone = None
         self.making_team = None

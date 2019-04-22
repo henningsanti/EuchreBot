@@ -1,7 +1,6 @@
 import random
-from Player import Player
 from Model import *
-from GUIPlayer import GUIPlayer as GP
+from GUI import GUIManager
 
 class Card:
     def __init__(self, value=None, suit=None):
@@ -48,11 +47,11 @@ class Dealer:
                 player.hand.append(self.deal_card())
 
 class Round:
-    def __init__(self, players, dealer_id):
+    def __init__(self, players, dealer_id, team_scores):
         self.players = players
         self.dealer = Dealer()
         self.dealer.deal(players=self.players)
-        self.state = GameState(dealer_id)
+        self.state = GameState(dealer_id, team_scores)
         self.setGameStates()
 
     def start(self):
@@ -235,7 +234,8 @@ class Round:
 
 class Match:
     def __init__(self):
-        self.players = [GP(id=0,team=0), Player(id=1,team=1), Player(id=2,team=0), Player(id=3,team=1)]
+        self.manager = GUIManager()
+        self.players = self.manager.players
         self.team_scores = [0,0]
         self.dealer_id = 0
 
@@ -254,7 +254,7 @@ class Match:
             self.dealer_id = findLeftOfPlayer(self.dealer_id)
 
     def play_round(self):
-        round = Round(players=self.players, dealer_id=self.dealer_id)
+        round = Round(players=self.players, dealer_id=self.dealer_id, team_scores=self.team_scores)
         return round.start()
 
     def check_end(self):
