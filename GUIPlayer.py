@@ -100,4 +100,19 @@ class GUIPlayer():
         pass
 
     def play_card(self, field):
-        pass
+        self.refresh_canvases()
+        self.render_hand()
+        self.render_info()
+
+        for i in range(len(field)):
+            if i == 0:
+                x = (604 - len(field)*card_dims['x'] - (len(field) - 1)*card_dims['padx'])/2
+
+            else:
+                x += card_dims['x'] + card_dims['padx']
+
+            card_coords = (x, 125, x+card_dims['x'], 125+card_dims['y'])
+            txt_coords = (x + 50, 200)
+
+            self.field_canvas.create_rectangle(card_coords, fill = "white")
+            self.field_canvas.create_text(txt_coords, text=field[i].__str__(), font=CARD_FONT)

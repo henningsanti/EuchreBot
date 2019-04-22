@@ -58,7 +58,7 @@ class GUIDecider(GUIPlayer):
             self.root.update_idletasks()
             self.root.update()
             continue
-            
+
         return SecondBidDecision(selected=self.bid2, trump=self.trump, alone=self.alone)
 
     def decide_bid(self, bid):
@@ -99,7 +99,7 @@ class GUIDecider(GUIPlayer):
             self.alone_button = Button(self.action_canvas, bg='white', text='Go Alone', font=BUTTON_FONT, command=lambda: self.decide_alone(True))
             self.not_alone_button = Button(self.action_canvas, bg='white', text='Go w/ Team', font=BUTTON_FONT, command=lambda: self.decide_alone(False))
 
-            self.alone_button.config(height=button_dims['height'], width=button_dims['width'],)
+            self.alone_button.config(height=button_dims['height'], width=button_dims['width'])
             self.not_alone_button.config(height=button_dims['height'], width=button_dims['width'])
 
             self.action_canvas.create_window((100,80), window=self.alone_button)
@@ -123,4 +123,19 @@ class GUIDecider(GUIPlayer):
         return self.hand[0]
 
     def play_card(self, field):
+        super().play_card(field)
+
+        self.card_button = Button(self.action_canvas, bg='white', text='Play First Card', font=BUTTON_FONT, command=lambda: self.bing())
+        self.card_button.config(height=button_dims['height'], width=button_dims['width'])
+        self.action_canvas.create_window((100,80), window=self.card_button)
+
+        self.selected = False
+        while not self.selected:
+            self.root.update_idletasks()
+            self.root.update()
+            continue
+
         return self.hand[0]
+
+    def bing(self):
+        self.selected = True
