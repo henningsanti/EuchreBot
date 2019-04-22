@@ -78,29 +78,21 @@ class GUIPlayer():
             card_coords = (x, 125, x+card_dims['x'], 125+card_dims['y'])
             self.field_canvas.create_rectangle(card_coords, fill = "white")
 
-    def render_bid(self, top_card):
-        self.refresh_canvases()
-        self.render_hand()
-        self.render_info()
-
-        card_coords = ((604 - card_dims['x'])/2,
-                        125,
-                       (604 - card_dims['x'])/2 + card_dims['x'],
-                        125+card_dims['y'])
-
-        txt_coords = ((604 - card_dims['x'])/2 + card_dims['x']/2,
-                       200)
-
-        self.field_canvas.create_rectangle(card_coords, fill = "white", tag="top_card")
-        self.field_canvas.create_text(txt_coords, text=top_card.__str__())
-
     def decide_bid(self, bid, alone):
         self.bid1 = bid
         self.alone = alone
         self.selected = True
 
     def bid(self, top_card):
-        pass
+        self.refresh_canvases()
+        self.render_hand()
+        self.render_info()
+
+        card_coords = ((604 - card_dims['x'])/2, 125, (604 - card_dims['x'])/2 + card_dims['x'], 125+card_dims['y'])
+        txt_coords = ((604 - card_dims['x'])/2 + card_dims['x']/2, 200)
+
+        self.top_card = self.field_canvas.create_rectangle(card_coords, fill = "white", tag="top_card")
+        self.top_card_txt = self.field_canvas.create_text(txt_coords, text=top_card.__str__())
 
     def second_bid(self, top_card):
         pass
@@ -117,7 +109,7 @@ class GUIDecider(GUIPlayer):
         super().__init__(id, team, mgr)
 
     def bid(self, top_card):
-        super(GUIDecider, self).render_bid(top_card)
+        super().bid(top_card)
 
         self.bid_button = Button(self.action_canvas, bg='white', text='BID', command=lambda: self.decide_bid(True, False))
         self.alone_button = Button(self.action_canvas, bg='white', text='GO ALONE', command=lambda: self.decide_bid(True, True))
@@ -148,14 +140,12 @@ class GUIDecider(GUIPlayer):
     def play_card(self, field):
         return self.hand[0]
 
-
-
 class GUIManager():
     def __init__(self):
-        # Add Canvases to Frames
         self.root = Tk()
         self.root.geometry(("800x600"))
         self.root.title("Euchre")
+
         self.field_canvas = Canvas(self.root,width=600,height=400,bg="green")
         self.info_canvas = Canvas(self.root,width=200,height=400,bg="grey")
         self.hand_canvas = Canvas(self.root,width=600,height=200,bg="red")
