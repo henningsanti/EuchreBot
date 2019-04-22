@@ -1,6 +1,6 @@
 from Model import *
 from tkinter import *
-from GUIDecider import GUIDecider
+from GUIDecider import *
 
 class GUIManager():
     def __init__(self):
@@ -25,7 +25,6 @@ class GUIManager():
         self.action_canvas.destroy()
         self.info_canvas.destroy()
         self.field_canvas.destroy()
-
 
         self.field_canvas = Canvas(self.root,width=600,height=400,bg="green")
         self.info_canvas = Canvas(self.root,width=200,height=400,bg="grey")

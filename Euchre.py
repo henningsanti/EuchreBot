@@ -75,7 +75,7 @@ class Round:
             self.players[player_id].hand.remove(card_chosen)
             player_id = findLeftOfPlayer(player_id, self.state.alone)
 
-        print(field)
+        # print(field)
         winning_card = field[0]
         for card in field:
             winning_card = self.compare_cards(a=winning_card, b=card, lead_suit=field[0][1].suit)
@@ -91,6 +91,7 @@ class Round:
             bid_result = self.players[bidder].bid(top_card)
             if not bid_result.bid:
                 bidder =  findLeftOfPlayer(bidder)
+                print('Bidding complete: ', bid_result.bid, bid_result.alone)
             else:
                 self.state.making_team = self.players[bidder].team
                 print(self.state.making_team)
@@ -101,6 +102,7 @@ class Round:
 
                 self.players[self.state.dealer_id].hand.remove(dealer_decision)
                 self.players[self.state.dealer_id].hand.append(top_card)
+                print('Bidding complete: ', bid_result.bid, bid_result.alone)
                 return True
 
         bidder = findLeftOfPlayer(self.state.dealer_id)
@@ -109,11 +111,13 @@ class Round:
             bid_results = self.players[bidder].second_bid(top_card)
             if not bid_results.selected:
                 bidder = findLeftOfPlayer(bidder)
+                print('Second Bidding complete: ', bid_results.selected, bid_results.trump, bid_results.alone)
             else:
                 if bid_results.alone:
                     self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
                 self.state.making_team = self.players[bidder].team
                 self.state.trump = bid_results.trump
+                print('Second Bidding complete: ', bid_results.selected, bid_results.trump, bid_results.alone)
                 return True
 
         return False
@@ -245,8 +249,8 @@ class Match:
             self.team_scores[0] += results[0]
             self.team_scores[1] += results[1]
 
-            print('Current Score: ', self.team_scores)
-            print()
+            # print('Current Score: ', self.team_scores)
+            # print()
 
             if(self.check_end()):
                 self.manager.render_game_win()
