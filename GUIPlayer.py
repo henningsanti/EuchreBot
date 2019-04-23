@@ -1,20 +1,5 @@
 from tkinter import *
-
-card_dims = {
-    'x': 100,
-    'y': 150,
-    'padx': 20
-}
-
-button_dims = {
-    'width': 20,
-    'height': 1,
-}
-
-INFO_FONT = ("Helvetica", 12)
-BUTTON_FONT = ("Helvetica", 10)
-CARD_FONT = ("Helvetica", 16)
-BIG_FONT = ("Helvetica", 20)
+from Utilities import *
 
 class GUIPlayer():
     def __init__(self, id, team, mgr):
@@ -30,10 +15,10 @@ class GUIPlayer():
         self.root = mgr.root
 
     def refresh_canvases(self):
-        self.hand_canvas.destroy()
-        self.action_canvas.destroy()
-        self.info_canvas.destroy()
-        self.field_canvas.destroy()
+        self.hand_canvas.grid_remove()
+        self.action_canvas.grid_remove()
+        self.info_canvas.grid_remove()
+        self.field_canvas.grid_remove()
 
         self.field_canvas = Canvas(self.root,width=600,height=400,bg="green")
         self.info_canvas = Canvas(self.root,width=200,height=400,bg="grey")
@@ -46,6 +31,19 @@ class GUIPlayer():
         self.action_canvas.grid(row=1, column=1)
 
     def render_hand(self):
+        widgets = []
+        widgets = self.root.winfo_children()
+        for w in widgets:
+            if w.winfo_children():
+                widgets.extend(w.winfo_children())
+
+        j = 0
+        for widget in widgets:
+            print('Widget {0}: '.format(j), widget)
+            j += 1
+
+        self.field_ids = {}
+
         for i in range(len(self.hand)):
             if i == 0:
                 x = (604 - len(self.hand)*card_dims['x'] - (len(self.hand) - 1)*card_dims['padx'])/2
@@ -56,8 +54,12 @@ class GUIPlayer():
             card_coords = (x, 25, x+card_dims['x'], 25+card_dims['y'])
             txt_coords = (x + 50, 100)
 
-            self.hand_canvas.create_rectangle(card_coords, fill = "white")
-            self.hand_canvas.create_text(txt_coords, text=self.hand[i].__str__(), font=CARD_FONT)
+            my_id = self.hand_canvas.create_rectangle(card_coords, fill="white", tag='card-in-hand')
+            my_id2 = self.hand_canvas.create_text(txt_coords, text=self.hand[i].__str__(), font=CARD_FONT, tag='card-in-hand')
+
+            self.field_ids[str(my_id)] = self.hand[i]
+            self.field_ids[str(my_id2)] = self.hand[i]
+
 
     def render_info(self):
         self.info_canvas.create_window((20, 30), anchor=W, window=Label(self.info_canvas, text='Player: '  + str(self.id), bg='grey', font=INFO_FONT))
@@ -74,7 +76,7 @@ class GUIPlayer():
         card_coords = ((604 - card_dims['x'])/2, 125, (604 - card_dims['x'])/2 + card_dims['x'], 125+card_dims['y'])
         txt_coords = ((604 - card_dims['x'])/2 + card_dims['x']/2, 200)
 
-        self.top_card = self.field_canvas.create_rectangle(card_coords, fill = "white", tag="top_card")
+        self.top_card = self.field_canvas.create_rectangle(card_coords, fill = "white")
         self.top_card_txt = self.field_canvas.create_text(txt_coords, text=top_card.__str__(), font=CARD_FONT)
         self.root.update()
 
@@ -84,7 +86,6 @@ class GUIPlayer():
         self.render_info()
 
         txt_coords = ((604 - card_dims['x'])/2 + card_dims['x']/2, 200)
-
         self.field_canvas.create_text(txt_coords, text='Pick a Trump Suit', font=BIG_FONT)
         self.root.update()
 
@@ -96,7 +97,6 @@ class GUIPlayer():
         self.root.update()
 
     def play_card(self, field):
-        print(self.id)
         self.refresh_canvases()
         self.render_hand()
         self.render_info()

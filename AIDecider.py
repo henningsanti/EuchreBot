@@ -18,7 +18,7 @@ class AIDecider(GUIPlayer):
 
         time.sleep(2)
 
-        if top_card == 'd':
+        if top_card.suit == 'd':
             trump = 'c'
         else:
             trump = 'd'
@@ -31,7 +31,7 @@ class AIDecider(GUIPlayer):
         time.sleep(2)
 
         return self.hand[0]
-    
+
     def swap_card(self):
         super().swap_card()
 

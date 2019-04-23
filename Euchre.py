@@ -1,6 +1,7 @@
 import random
 from Model import *
 from GUI import GUIManager
+from Utilities import *
 
 class Card:
     def __init__(self, value=None, suit=None):
@@ -75,7 +76,6 @@ class Round:
             self.players[player_id].hand.remove(card_chosen)
             player_id = findLeftOfPlayer(player_id, self.state.alone)
 
-        # print(field)
         winning_card = field[0]
         for card in field:
             winning_card = self.compare_cards(a=winning_card, b=card, lead_suit=field[0][1].suit)
@@ -91,10 +91,8 @@ class Round:
             bid_result = self.players[bidder].bid(top_card)
             if not bid_result.bid:
                 bidder =  findLeftOfPlayer(bidder)
-                print('Bidding complete: ', bid_result.bid, bid_result.alone)
             else:
                 self.state.making_team = self.players[bidder].team
-                print(self.state.making_team)
                 if bid_result.alone:
                     self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
                 self.state.trump = top_card.suit
@@ -102,7 +100,6 @@ class Round:
 
                 self.players[self.state.dealer_id].hand.remove(dealer_decision)
                 self.players[self.state.dealer_id].hand.append(top_card)
-                print('Bidding complete: ', bid_result.bid, bid_result.alone)
                 return True
 
         bidder = findLeftOfPlayer(self.state.dealer_id)
@@ -111,13 +108,11 @@ class Round:
             bid_results = self.players[bidder].second_bid(top_card)
             if not bid_results.selected:
                 bidder = findLeftOfPlayer(bidder)
-                print('Second Bidding complete: ', bid_results.selected, bid_results.trump, bid_results.alone)
             else:
                 if bid_results.alone:
                     self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
                 self.state.making_team = self.players[bidder].team
                 self.state.trump = bid_results.trump
-                print('Second Bidding complete: ', bid_results.selected, bid_results.trump, bid_results.alone)
                 return True
 
         return False
@@ -151,36 +146,36 @@ class Round:
                 return self.compare_trumps(a, b)
 
             else:
-                if self.is_lefty(card1):
+                if is_lefty(card1, self.state.trump):
                     return a
-                elif self.is_lefty(card2):
+                elif is_lefty(card2, self.state.trump):
                     return b
                 else:
                     return self.compare_non_trump(a, b, lead_suit)
 
         else:
-            if card1.suit == self.state.trump and not self.is_lefty(card2):
+            if card1.suit == self.state.trump and not is_lefty(card2, self.state.trump):
                 return a
 
-            elif card2.suit == self.state.trump and not self.is_lefty(card1):
+            elif card2.suit == self.state.trump and not is_lefty(card1, self.state.trump):
                 return b
 
-            elif card1.suit == self.state.trump and self.is_lefty(card2):
+            elif card1.suit == self.state.trump and is_lefty(card2, self.state.trump):
                 if card1.value == 'J':
                     return a
                 else:
                     return b
 
-            elif card2.suit == self.state.trump and self.is_lefty(card1):
+            elif card2.suit == self.state.trump and is_lefty(card1, self.state.trump):
                 if card2.value == 'J':
                     return b
                 else:
                     return a
 
             else:
-                if self.is_lefty(card1):
+                if is_lefty(card1, self.state.trump):
                     return a
-                elif self.is_lefty(card2):
+                elif is_lefty(card2, self.state.trump):
                     return b
                 else:
                     return self.compare_non_trump(a, b, lead_suit)
@@ -219,28 +214,11 @@ class Round:
 
             return a if hierarchy[card1.value] > hierarchy[card2.value] else b
 
-    def is_lefty(self, card):
-        if card.value == 'J':
-            if self.state.trump == 'd':
-                return card.suit == 'h'
-
-            elif self.state.trump == 'h':
-                return card.suit == 'd'
-
-            elif self.state.trump == 's':
-                return card.suit == 'c'
-
-            else:
-                return card.suit == 's'
-
-        else:
-            return False
-
 class Match:
     def __init__(self):
         self.manager = GUIManager()
         self.players = self.manager.players
-        self.team_scores = [0,0]
+        self.team_scores = [9,9]
         self.dealer_id = 0
 
     def start_match(self):
@@ -249,11 +227,8 @@ class Match:
             self.team_scores[0] += results[0]
             self.team_scores[1] += results[1]
 
-            # print('Current Score: ', self.team_scores)
-            # print()
-
-            if(self.check_end()):
-                self.manager.render_game_win()
+            if(self.check_end()[0]):
+                self.manager.render_game_win(winners=self.check_end()[1], team_scores=self.team_scores)
 
             self.dealer_id = findLeftOfPlayer(self.dealer_id)
 
@@ -263,13 +238,11 @@ class Match:
 
     def check_end(self):
         if self.team_scores[0] >= 10:
-            print('\nTEAM 0 WINS MATCH')
-            return True
+            return True, 0
         elif self.team_scores[1] >= 10:
-            print('\nTEAM 1 WINS MATCH')
-            return True
+            return True, 1
         else:
-            return False
+            return False, -1
 
 def findLeftOfPlayer(id, removed_id=None):
         if removed_id == None:

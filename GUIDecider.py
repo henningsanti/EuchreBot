@@ -1,5 +1,7 @@
 from GUIPlayer import *
 from Model import *
+from Utilities import *
+
 
 class GUIDecider(GUIPlayer):
     def __init__(self, id, team, mgr):
@@ -65,14 +67,14 @@ class GUIDecider(GUIPlayer):
         self.bid1 = bid
 
         if bid:
-            self.action_canvas.destroy()
+            self.action_canvas.grid_remove()
             self.action_canvas = Canvas(self.root,width=200,height=200,bg="blue")
             self.action_canvas.grid(row=1, column=1)
 
             self.alone_button = Button(self.action_canvas, bg='white', text='Go Alone', font=BUTTON_FONT, command=lambda: self.decide_alone(True))
             self.not_alone_button = Button(self.action_canvas, bg='white', text='Go w/ Team', font=BUTTON_FONT, command=lambda: self.decide_alone(False))
 
-            self.alone_button.config(height=button_dims['height'], width=button_dims['width'],)
+            self.alone_button.config(height=button_dims['height'], width=button_dims['width'])
             self.not_alone_button.config(height=button_dims['height'], width=button_dims['width'])
 
             self.action_canvas.create_window((100,80), window=self.alone_button)
@@ -91,8 +93,9 @@ class GUIDecider(GUIPlayer):
     def decide_second_bid(self, bid, trump):
         self.bid2 = bid
         self.trump = trump
+
         if bid:
-            self.action_canvas.destroy()
+            self.action_canvas.grid_remove()
             self.action_canvas = Canvas(self.root,width=200,height=200,bg="blue")
             self.action_canvas.grid(row=1, column=1)
 
@@ -126,9 +129,15 @@ class GUIDecider(GUIPlayer):
     def play_card(self, field):
         super().play_card(field)
 
-        self.card_button = Button(self.action_canvas, bg='white', text='Play First Card', font=BUTTON_FONT, command=lambda: self.bing())
-        self.card_button.config(height=button_dims['height'], width=button_dims['width'])
-        self.action_canvas.create_window((100,80), window=self.card_button)
+        self.lead_suit = None
+        if len(field) > 0:
+            self.lead_suit = field[0][1].suit
+
+        self.bingbingbing = Button(self.action_canvas, bg='white', text='Bing!', font=BUTTON_FONT, command=lambda: self.bing())
+        self.bingbingbing.config(height=button_dims['height'], width=button_dims['width'])
+        self.action_canvas.create_window((100,80), window=self.bingbingbing)
+
+        self.hand_canvas.tag_bind('card-in-hand', '<Button-1>', self.play_this_card)
 
         self.selected = False
         while not self.selected:
@@ -136,7 +145,35 @@ class GUIDecider(GUIPlayer):
             self.root.update()
             continue
 
-        return self.hand[0]
+        return self.card_to_play
 
+    def play_this_card(self, event):
+        card_id = event.widget.find_closest(event.x, event.y)[0]
+        self.card_to_play = self.field_ids[str(card_id)]
+        print(self.game_state.trump)
+
+        if self.lead_suit == None:
+            self.selected = True
+            return
+
+        if self.card_to_play.suit == self.lead_suit:
+            self.selected = True
+
+        else:
+            for card in self.hand:
+                if not card == self.card_to_play and len(self.hand) > 1:
+                    if card.suit == self.lead_suit:
+                        self.selected = False
+                        break
+
+                    elif is_lefty(card, self.game_state.trump) and self.lead_suit == self.game_state.trump:
+                        self.selected = False
+                        break
+
+                    else:
+                        self.selected = True
+                else:
+                    self.selected = True
     def bing(self):
+        self.card_to_play = self.hand[0]
         self.selected = True
