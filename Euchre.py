@@ -104,8 +104,8 @@ class Round:
                 if bid_result.alone:
                     self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
                 self.state.trump = top_card.suit
-                dealer_decision = self.players[self.state.dealer_id].swap_card()
-
+                dealer_decision = self.players[self.state.dealer_id].swap_card(top_card)
+                print(bidder, self.state.dealer_id, dealer_decision)
                 self.players[self.state.dealer_id].hand.remove(dealer_decision)
                 self.players[self.state.dealer_id].hand.append(top_card)
                 return True

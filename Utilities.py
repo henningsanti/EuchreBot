@@ -1,13 +1,21 @@
-card_dims = {
+CARD_CONFIG = {
     'x': 100,
     'y': 150,
     'padx': 20
 }
 
-button_dims = {
+BTN_CONFIG = {
     'width': 20,
     'height': 1,
 }
+
+
+SUITS = {'h' : 'Hearts',
+         'd' : 'Diamonds',
+         'c' : 'Clubs',
+         's' : 'Spades'}
+
+SLEEPTIME = 0.5
 
 INFO_FONT = ("Helvetica", 12)
 BUTTON_FONT = ("Helvetica", 10)
