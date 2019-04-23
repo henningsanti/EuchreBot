@@ -1,4 +1,7 @@
 import random
+from Model import *
+from GUI import GUIManager
+from Utilities import *
 
 class Card:
     def __init__(self, value=None, suit=None):
@@ -44,50 +47,13 @@ class Dealer:
             for i in range(5):
                 player.hand.append(self.deal_card())
 
-class Player:
-    def __init__(self, id, team):
-        self.id = id
-        self.team = team
-        self.hand = []
-        self.game_state = None
-
-    def bid(self, top_card):
-        return BidDecision(bid=False, alone=False)
-
-    def second_bid(self, top_card):
-        return SecondBidDecision(selected=True, trump='d', alone=False)
-
-    def swap_card(self):
-        return self.hand[0]
-
-    def play_card(self, field):
-        return self.hand[0]
-
-class GameState:
-    def __init__(self, dealer_id):
-        self.dealer_id = dealer_id
-        self.team_tricks = [0, 0]
-        self.trump = None
-        self.alone = None
-        self.making_team = None
-
-class BidDecision:
-    def __init__(self, bid, alone):
-        self.bid = bid
-        self.alone = alone
-
-class SecondBidDecision:
-    def __init__(self, selected, trump, alone):
-        self.selected = selected
-        self.trump = trump
-        self.alone = alone
-
 class Round:
-    def __init__(self, players, dealer_id):
+    def __init__(self, players, dealer_id, team_scores, mgr):
         self.players = players
         self.dealer = Dealer()
         self.dealer.deal(players=self.players)
-        self.state = GameState(dealer_id)
+        self.state = GameState(dealer_id, team_scores)
+        self.mgr = mgr
         self.setGameStates()
 
     def start(self):
@@ -115,8 +81,14 @@ class Round:
         for card in field:
             winning_card = self.compare_cards(a=winning_card, b=card, lead_suit=field[0][1].suit)
 
+        for i in range(len(field)):
+            if field[i] == winning_card:
+                winning_index = i
+                break
+
         self.state.team_tricks[self.players[winning_card[0]].team] += 1
 
+        self.mgr.render_trick_win(winner=self.players[winning_card[0]], field=field, index=winning_index)
         return winning_card[0]
 
     def bidding(self):
@@ -132,8 +104,8 @@ class Round:
                 if bid_result.alone:
                     self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
                 self.state.trump = top_card.suit
-                dealer_decision = self.players[self.state.dealer_id].swap_card()
-
+                dealer_decision = self.players[self.state.dealer_id].swap_card(top_card)
+                print(bidder, self.state.dealer_id, dealer_decision)
                 self.players[self.state.dealer_id].hand.remove(dealer_decision)
                 self.players[self.state.dealer_id].hand.append(top_card)
                 return True
@@ -154,7 +126,6 @@ class Round:
         return False
 
     def evaluate_scores(self):
-
         scores = [0, 0]
         winning_team = 0 if self.state.team_tricks[0] > self.state.team_tricks[1] else 1
         tricks_won = self.state.team_tricks[winning_team]
@@ -183,36 +154,36 @@ class Round:
                 return self.compare_trumps(a, b)
 
             else:
-                if self.is_lefty(card1):
+                if is_lefty(card1, self.state.trump):
                     return a
-                elif self.is_lefty(card2):
+                elif is_lefty(card2, self.state.trump):
                     return b
                 else:
                     return self.compare_non_trump(a, b, lead_suit)
 
         else:
-            if card1.suit == self.state.trump and not self.is_lefty(card2):
+            if card1.suit == self.state.trump and not is_lefty(card2, self.state.trump):
                 return a
 
-            elif card2.suit == self.state.trump and not self.is_lefty(card1):
+            elif card2.suit == self.state.trump and not is_lefty(card1, self.state.trump):
                 return b
 
-            elif card1.suit == self.state.trump and self.is_lefty(card2):
+            elif card1.suit == self.state.trump and is_lefty(card2, self.state.trump):
                 if card1.value == 'J':
                     return a
                 else:
                     return b
 
-            elif card2.suit == self.state.trump and self.is_lefty(card1):
+            elif card2.suit == self.state.trump and is_lefty(card1, self.state.trump):
                 if card2.value == 'J':
                     return b
                 else:
                     return a
 
             else:
-                if self.is_lefty(card1):
+                if is_lefty(card1, self.state.trump):
                     return a
-                elif self.is_lefty(card2):
+                elif is_lefty(card2, self.state.trump):
                     return b
                 else:
                     return self.compare_non_trump(a, b, lead_suit)
@@ -251,27 +222,11 @@ class Round:
 
             return a if hierarchy[card1.value] > hierarchy[card2.value] else b
 
-    def is_lefty(self, card):
-        if card.value == 'J':
-            if self.state.trump == 'd':
-                return card.suit == 'h'
-
-            elif self.state.trump == 'h':
-                return card.suit == 'd'
-
-            elif self.state.trump == 's':
-                return card.suit == 'c'
-
-            else:
-                return card.suit == 's'
-
-        else:
-            return False
-
 class Match:
     def __init__(self):
-        self.players = [Player(id=0,team=0), Player(id=1,team=1), Player(id=2,team=0), Player(id=3,team=1)]
-        self.team_scores = [0,0]
+        self.manager = GUIManager()
+        self.players = self.manager.players
+        self.team_scores = [9,9]
         self.dealer_id = 0
 
     def start_match(self):
@@ -280,27 +235,22 @@ class Match:
             self.team_scores[0] += results[0]
             self.team_scores[1] += results[1]
 
-            print('Current Score: ', self.team_scores)
-            print()
-
-            if(self.check_end()):
-                return
+            if(self.check_end()[0]):
+                self.manager.render_game_win(winners=self.check_end()[1], team_scores=self.team_scores)
 
             self.dealer_id = findLeftOfPlayer(self.dealer_id)
 
     def play_round(self):
-        round = Round(players=self.players, dealer_id=self.dealer_id)
+        round = Round(players=self.players, dealer_id=self.dealer_id, team_scores=self.team_scores, mgr=self.manager)
         return round.start()
 
     def check_end(self):
         if self.team_scores[0] >= 10:
-            print('\nTEAM 0 WINS MATCH')
-            return True
+            return True, 0
         elif self.team_scores[1] >= 10:
-            print('\nTEAM 1 WINS MATCH')
-            return True
+            return True, 1
         else:
-            return False
+            return False, -1
 
 def findLeftOfPlayer(id, removed_id=None):
         if removed_id == None:
