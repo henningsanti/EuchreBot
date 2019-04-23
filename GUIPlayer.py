@@ -66,16 +66,6 @@ class GUIPlayer():
         self.info_canvas.create_window((20, 150), anchor=W, window=Label(self.info_canvas, text='Trick Scores: '  + self.game_state.team_tricks.__str__(), bg='grey', font=INFO_FONT))
         self.info_canvas.create_window((20, 190), anchor=W, window=Label(self.info_canvas, text='Team Scores: '  + self.game_state.team_scores.__str__(), bg='grey', font=INFO_FONT))
 
-    def render_trick(self):
-        for i in range(4):
-            if i == 0:
-                x = 72
-            else:
-                x += card_dims['x'] + card_dims['padx']
-
-            card_coords = (x, 125, x+card_dims['x'], 125+card_dims['y'])
-            self.field_canvas.create_rectangle(card_coords, fill = "white")
-
     def bid(self, top_card):
         self.refresh_canvases()
         self.render_hand()
@@ -86,6 +76,7 @@ class GUIPlayer():
 
         self.top_card = self.field_canvas.create_rectangle(card_coords, fill = "white", tag="top_card")
         self.top_card_txt = self.field_canvas.create_text(txt_coords, text=top_card.__str__(), font=CARD_FONT)
+        self.root.update()
 
     def second_bid(self, top_card):
         self.refresh_canvases()
@@ -95,11 +86,17 @@ class GUIPlayer():
         txt_coords = ((604 - card_dims['x'])/2 + card_dims['x']/2, 200)
 
         self.field_canvas.create_text(txt_coords, text='Pick a Trump Suit', font=BIG_FONT)
+        self.root.update()
 
     def swap_card(self):
-        pass
+        self.refresh_canvases()
+        self.render_hand()
+        self.render_info()
+
+        self.root.update()
 
     def play_card(self, field):
+        print(self.id)
         self.refresh_canvases()
         self.render_hand()
         self.render_info()
@@ -116,3 +113,5 @@ class GUIPlayer():
 
             self.field_canvas.create_rectangle(card_coords, fill = "white")
             self.field_canvas.create_text(txt_coords, text=field[i].__str__(), font=CARD_FONT)
+
+        self.root.update()

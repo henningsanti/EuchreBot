@@ -120,6 +120,7 @@ class GUIDecider(GUIPlayer):
         self.selected = True
 
     def swap_card(self):
+        super().swap_card()
         return self.hand[0]
 
     def play_card(self, field):
