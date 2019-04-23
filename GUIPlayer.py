@@ -15,10 +15,9 @@ class GUIPlayer():
         self.root = mgr.root
 
     def refresh_canvases(self):
-        self.hand_canvas.grid_remove()
-        self.action_canvas.grid_remove()
-        self.info_canvas.grid_remove()
-        self.field_canvas.grid_remove()
+        list = self.root.grid_slaves()
+        for l in list:
+            l.destroy()
 
         self.field_canvas = Canvas(self.root,width=600,height=400,bg="green")
         self.info_canvas = Canvas(self.root,width=200,height=400,bg="grey")
@@ -31,34 +30,23 @@ class GUIPlayer():
         self.action_canvas.grid(row=1, column=1)
 
     def render_hand(self):
-        widgets = []
-        widgets = self.root.winfo_children()
-        for w in widgets:
-            if w.winfo_children():
-                widgets.extend(w.winfo_children())
-
-        j = 0
-        for widget in widgets:
-            print('Widget {0}: '.format(j), widget)
-            j += 1
-
-        self.field_ids = {}
+        self.hand_ids = {}
 
         for i in range(len(self.hand)):
             if i == 0:
-                x = (604 - len(self.hand)*card_dims['x'] - (len(self.hand) - 1)*card_dims['padx'])/2
+                x = (604 - len(self.hand)*CARD_CONFIG['x'] - (len(self.hand) - 1)*CARD_CONFIG['padx'])/2
 
             else:
-                x += card_dims['x'] + card_dims['padx']
+                x += CARD_CONFIG['x'] + CARD_CONFIG['padx']
 
-            card_coords = (x, 25, x+card_dims['x'], 25+card_dims['y'])
+            card_coords = (x, 25, x+CARD_CONFIG['x'], 25+CARD_CONFIG['y'])
             txt_coords = (x + 50, 100)
 
             my_id = self.hand_canvas.create_rectangle(card_coords, fill="white", tag='card-in-hand')
             my_id2 = self.hand_canvas.create_text(txt_coords, text=self.hand[i].__str__(), font=CARD_FONT, tag='card-in-hand')
 
-            self.field_ids[str(my_id)] = self.hand[i]
-            self.field_ids[str(my_id2)] = self.hand[i]
+            self.hand_ids[str(my_id)] = self.hand[i]
+            self.hand_ids[str(my_id2)] = self.hand[i]
 
 
     def render_info(self):
@@ -68,13 +56,16 @@ class GUIPlayer():
         self.info_canvas.create_window((20, 150), anchor=W, window=Label(self.info_canvas, text='Trick Scores: '  + self.game_state.team_tricks.__str__(), bg='grey', font=INFO_FONT))
         self.info_canvas.create_window((20, 190), anchor=W, window=Label(self.info_canvas, text='Team Scores: '  + self.game_state.team_scores.__str__(), bg='grey', font=INFO_FONT))
 
+        text = 'No Trump Selected Yet.' if self.game_state.trump == None else 'Trump Suit: ' + SUITS[self.game_state.trump]
+        self.info_canvas.create_window((20, 310), anchor=W, window=Label(self.info_canvas, text=text, bg='grey', font=INFO_FONT))
+
     def bid(self, top_card):
         self.refresh_canvases()
         self.render_hand()
         self.render_info()
 
-        card_coords = ((604 - card_dims['x'])/2, 125, (604 - card_dims['x'])/2 + card_dims['x'], 125+card_dims['y'])
-        txt_coords = ((604 - card_dims['x'])/2 + card_dims['x']/2, 200)
+        card_coords = ((604 - CARD_CONFIG['x'])/2, 125, (604 - CARD_CONFIG['x'])/2 + CARD_CONFIG['x'], 125+CARD_CONFIG['y'])
+        txt_coords = ((604 - CARD_CONFIG['x'])/2 + CARD_CONFIG['x']/2, 200)
 
         self.top_card = self.field_canvas.create_rectangle(card_coords, fill = "white")
         self.top_card_txt = self.field_canvas.create_text(txt_coords, text=top_card.__str__(), font=CARD_FONT)
@@ -85,15 +76,21 @@ class GUIPlayer():
         self.render_hand()
         self.render_info()
 
-        txt_coords = ((604 - card_dims['x'])/2 + card_dims['x']/2, 200)
-        self.field_canvas.create_text(txt_coords, text='Pick a Trump Suit', font=BIG_FONT)
+        txt_coords = ((604 - CARD_CONFIG['x'])/2 + CARD_CONFIG['x']/2, 200)
+        self.field_canvas.create_text(txt_coords, text='Pick a Trump Suit.', font=BIG_FONT)
+
         self.root.update()
 
-    def swap_card(self):
+    def swap_card(self, top_card):
         self.refresh_canvases()
         self.render_hand()
         self.render_info()
 
+        card_coords = ((604 - CARD_CONFIG['x'])/2, 125, (604 - CARD_CONFIG['x'])/2 + CARD_CONFIG['x'], 125+CARD_CONFIG['y'])
+        txt_coords = ((604 - CARD_CONFIG['x'])/2 + CARD_CONFIG['x']/2, 200)
+
+        self.top_card = self.field_canvas.create_rectangle(card_coords, fill = "white")
+        self.top_card_txt = self.field_canvas.create_text(txt_coords, text=top_card.__str__(), font=CARD_FONT)
         self.root.update()
 
     def play_card(self, field):
@@ -103,12 +100,12 @@ class GUIPlayer():
 
         for i in range(len(field)):
             if i == 0:
-                x = (604 - len(field)*card_dims['x'] - (len(field) - 1)*card_dims['padx'])/2
+                x = (604 - len(field)*CARD_CONFIG['x'] - (len(field) - 1)*CARD_CONFIG['padx'])/2
 
             else:
-                x += card_dims['x'] + card_dims['padx']
+                x += CARD_CONFIG['x'] + CARD_CONFIG['padx']
 
-            card_coords = (x, 125, x+card_dims['x'], 125+card_dims['y'])
+            card_coords = (x, 125, x+CARD_CONFIG['x'], 125+CARD_CONFIG['y'])
             txt_coords = (x + 50, 200)
 
             self.field_canvas.create_rectangle(card_coords, fill = "white")

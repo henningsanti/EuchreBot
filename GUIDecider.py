@@ -13,8 +13,8 @@ class GUIDecider(GUIPlayer):
         self.bid_button = Button(self.action_canvas, bg='white', text='Bid', font=BUTTON_FONT, command=lambda: self.decide_bid(True))
         self.pass_button = Button(self.action_canvas, bg='grey', text='Pass', font=BUTTON_FONT, command=lambda: self.decide_bid(False))
 
-        self.bid_button.config(height=button_dims['height'], width=button_dims['width'],)
-        self.pass_button.config(height=button_dims['height'], width=button_dims['width'])
+        self.bid_button.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'],)
+        self.pass_button.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
 
         self.action_canvas.create_window((100,80), window=self.bid_button)
         self.action_canvas.create_window((100,120), window=self.pass_button)
@@ -29,14 +29,9 @@ class GUIDecider(GUIPlayer):
 
     def second_bid(self, top_card):
         super().second_bid(top_card)
-
-        suits = {'h' : 'Hearts',
-                 'd' : 'Diamonds',
-                 'c' : 'Clubs',
-                 's' : 'Spades'}
         options = {}
 
-        for key, pair in suits.items():
+        for key, pair in SUITS.items():
             if not key == top_card.suit:
                 options[key] = pair
 
@@ -45,10 +40,10 @@ class GUIDecider(GUIPlayer):
         self.suit3_button = Button(self.action_canvas, bg='white', text=options[list(options.keys())[2]], font=BUTTON_FONT, command=lambda: self.decide_second_bid(True, list(options.keys())[2]))
         self.pass_button = Button(self.action_canvas, bg='grey', text='Pass', font=BUTTON_FONT, command=lambda: self.decide_second_bid(False, None))
 
-        self.suit1_button.config(height=button_dims['height'], width=button_dims['width'],)
-        self.suit2_button.config(height=button_dims['height'], width=button_dims['width'])
-        self.suit3_button.config(height=button_dims['height'], width=button_dims['width'])
-        self.pass_button.config(height=button_dims['height'], width=button_dims['width'])
+        self.suit1_button.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'],)
+        self.suit2_button.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
+        self.suit3_button.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
+        self.pass_button.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
 
         self.action_canvas.create_window((100,40), window=self.suit1_button)
         self.action_canvas.create_window((100,80), window=self.suit2_button)
@@ -67,15 +62,15 @@ class GUIDecider(GUIPlayer):
         self.bid1 = bid
 
         if bid:
-            self.action_canvas.grid_remove()
+            self.action_canvas.destroy()
             self.action_canvas = Canvas(self.root,width=200,height=200,bg="blue")
             self.action_canvas.grid(row=1, column=1)
 
             self.alone_button = Button(self.action_canvas, bg='white', text='Go Alone', font=BUTTON_FONT, command=lambda: self.decide_alone(True))
             self.not_alone_button = Button(self.action_canvas, bg='white', text='Go w/ Team', font=BUTTON_FONT, command=lambda: self.decide_alone(False))
 
-            self.alone_button.config(height=button_dims['height'], width=button_dims['width'])
-            self.not_alone_button.config(height=button_dims['height'], width=button_dims['width'])
+            self.alone_button.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
+            self.not_alone_button.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
 
             self.action_canvas.create_window((100,80), window=self.alone_button)
             self.action_canvas.create_window((100,120), window=self.not_alone_button)
@@ -95,15 +90,15 @@ class GUIDecider(GUIPlayer):
         self.trump = trump
 
         if bid:
-            self.action_canvas.grid_remove()
+            self.action_canvas.destroy()
             self.action_canvas = Canvas(self.root,width=200,height=200,bg="blue")
             self.action_canvas.grid(row=1, column=1)
 
             self.alone_button = Button(self.action_canvas, bg='white', text='Go Alone', font=BUTTON_FONT, command=lambda: self.decide_alone(True))
             self.not_alone_button = Button(self.action_canvas, bg='white', text='Go w/ Team', font=BUTTON_FONT, command=lambda: self.decide_alone(False))
 
-            self.alone_button.config(height=button_dims['height'], width=button_dims['width'])
-            self.not_alone_button.config(height=button_dims['height'], width=button_dims['width'])
+            self.alone_button.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
+            self.not_alone_button.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
 
             self.action_canvas.create_window((100,80), window=self.alone_button)
             self.action_canvas.create_window((100,120), window=self.not_alone_button)
@@ -122,9 +117,22 @@ class GUIDecider(GUIPlayer):
         self.alone = alone
         self.selected = True
 
-    def swap_card(self):
-        super().swap_card()
-        return self.hand[0]
+    def swap_card(self, top_card):
+        super().swap_card(top_card)
+
+        self.hand_canvas.tag_bind('card-in-hand', '<Button-1>', self.swap_this_card)
+
+        txt_coords = (302, 62)
+        text = 'Player {0}, pick a card from your hand to discard.'.format(self.id)
+        self.field_canvas.create_text(txt_coords, text=text, font=BIG_FONT)
+
+        self.selected = False
+        while not self.selected:
+            self.root.update_idletasks()
+            self.root.update()
+            continue
+
+        return self.card_to_swap
 
     def play_card(self, field):
         super().play_card(field)
@@ -133,9 +141,10 @@ class GUIDecider(GUIPlayer):
         if len(field) > 0:
             self.lead_suit = field[0][1].suit
 
-        self.bingbingbing = Button(self.action_canvas, bg='white', text='Bing!', font=BUTTON_FONT, command=lambda: self.bing())
-        self.bingbingbing.config(height=button_dims['height'], width=button_dims['width'])
-        self.action_canvas.create_window((100,80), window=self.bingbingbing)
+        # Bing button allows you to play a random card for testing purposes
+        # self.bingbingbing = Button(self.action_canvas, bg='white', text='Bing!', font=BUTTON_FONT, command=lambda: self.bing())
+        # self.bingbingbing.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
+        # self.action_canvas.create_window((100,80), window=self.bingbingbing)
 
         self.hand_canvas.tag_bind('card-in-hand', '<Button-1>', self.play_this_card)
 
@@ -149,7 +158,7 @@ class GUIDecider(GUIPlayer):
 
     def play_this_card(self, event):
         card_id = event.widget.find_closest(event.x, event.y)[0]
-        self.card_to_play = self.field_ids[str(card_id)]
+        self.card_to_play = self.hand_ids[str(card_id)]
         print(self.game_state.trump)
 
         if self.lead_suit == None:
@@ -157,6 +166,9 @@ class GUIDecider(GUIPlayer):
             return
 
         if self.card_to_play.suit == self.lead_suit:
+            self.selected = True
+
+        elif is_lefty(self.card_to_play, self.game_state.trump) and self.lead_suit == self.game_state.trump:
             self.selected = True
 
         else:
@@ -174,6 +186,12 @@ class GUIDecider(GUIPlayer):
                         self.selected = True
                 else:
                     self.selected = True
+
+    def swap_this_card(self, event):
+        card_id = event.widget.find_closest(event.x, event.y)[0]
+        self.card_to_swap = self.hand_ids[str(card_id)]
+        self.selected = True
+
     def bing(self):
         self.card_to_play = self.hand[0]
         self.selected = True
