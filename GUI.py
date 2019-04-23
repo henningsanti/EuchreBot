@@ -19,7 +19,7 @@ class GUIManager():
         self.hand_canvas.grid(row=1, column=0)
         self.action_canvas.grid(row=1, column=1)
 
-        self.players = [AIDecider(id=0,team=0, mgr=self), GUIDecider(id=1,team=1, mgr=self), GUIDecider(id=2,team=0, mgr=self), GUIDecider(id=3,team=1, mgr=self)]
+        self.players = [GUIDecider(id=0,team=0, mgr=self), GUIDecider(id=1,team=1, mgr=self), GUIDecider(id=2,team=0, mgr=self), GUIDecider(id=3,team=1, mgr=self)]
 
     def render_game_win(self):
         self.hand_canvas.destroy()
