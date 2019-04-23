@@ -31,16 +31,16 @@ class GUIPlayer():
         self.action_canvas.grid(row=1, column=1)
 
     def render_hand(self):
-        widgets = []
-        widgets = self.root.winfo_children()
-        for w in widgets:
-            if w.winfo_children():
-                widgets.extend(w.winfo_children())
-
-        j = 0
-        for widget in widgets:
-            print('Widget {0}: '.format(j), widget)
-            j += 1
+        # widgets = []
+        # widgets = self.root.winfo_children()
+        # for w in widgets:
+        #     if w.winfo_children():
+        #         widgets.extend(w.winfo_children())
+        #
+        # j = 0
+        # for widget in widgets:
+        #     print('Widget {0}: '.format(j), widget)
+        #     j += 1
 
         self.field_ids = {}
 
@@ -86,7 +86,7 @@ class GUIPlayer():
         self.render_info()
 
         txt_coords = ((604 - card_dims['x'])/2 + card_dims['x']/2, 200)
-        self.field_canvas.create_text(txt_coords, text='Pick a Trump Suit', font=BIG_FONT)
+        self.field_canvas.create_text(txt_coords, text='Pick a Trump Suit.', font=BIG_FONT)
         self.root.update()
 
     def swap_card(self):
@@ -114,4 +114,4 @@ class GUIPlayer():
             self.field_canvas.create_rectangle(card_coords, fill = "white")
             self.field_canvas.create_text(txt_coords, text=field[i].__str__(), font=CARD_FONT)
 
-        self.root.update()
+        # self.root.update()

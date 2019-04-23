@@ -48,11 +48,12 @@ class Dealer:
                 player.hand.append(self.deal_card())
 
 class Round:
-    def __init__(self, players, dealer_id, team_scores):
+    def __init__(self, players, dealer_id, team_scores, mgr):
         self.players = players
         self.dealer = Dealer()
         self.dealer.deal(players=self.players)
         self.state = GameState(dealer_id, team_scores)
+        self.mgr = mgr
         self.setGameStates()
 
     def start(self):
@@ -80,7 +81,14 @@ class Round:
         for card in field:
             winning_card = self.compare_cards(a=winning_card, b=card, lead_suit=field[0][1].suit)
 
+        for i in range(len(field)):
+            if field[i] == winning_card:
+                winning_index = i
+                break
+
         self.state.team_tricks[self.players[winning_card[0]].team] += 1
+
+        self.mgr.render_trick_win(winner=self.players[winning_card[0]], field=field, index=winning_index)
         return winning_card[0]
 
     def bidding(self):
@@ -233,7 +241,7 @@ class Match:
             self.dealer_id = findLeftOfPlayer(self.dealer_id)
 
     def play_round(self):
-        round = Round(players=self.players, dealer_id=self.dealer_id, team_scores=self.team_scores)
+        round = Round(players=self.players, dealer_id=self.dealer_id, team_scores=self.team_scores, mgr=self.manager)
         return round.start()
 
     def check_end(self):

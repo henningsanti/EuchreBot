@@ -13,6 +13,7 @@ INFO_FONT = ("Helvetica", 12)
 BUTTON_FONT = ("Helvetica", 10)
 CARD_FONT = ("Helvetica", 16)
 BIG_FONT = ("Helvetica", 20)
+HUGE_FONT = ("Helvetica", 32)
 
 def is_lefty(card, trump):
     if card.value == 'J':

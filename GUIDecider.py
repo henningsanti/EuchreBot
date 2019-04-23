@@ -159,6 +159,9 @@ class GUIDecider(GUIPlayer):
         if self.card_to_play.suit == self.lead_suit:
             self.selected = True
 
+        elif is_lefty(self.card_to_play, self.game_state.trump) and self.lead_suit == self.game_state.trump:
+            self.selected = True
+
         else:
             for card in self.hand:
                 if not card == self.card_to_play and len(self.hand) > 1:
