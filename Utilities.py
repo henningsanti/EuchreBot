@@ -39,3 +39,22 @@ def is_lefty(card, trump):
 
     else:
         return False
+
+def validate_play_card(lead_suit, card, trump, hand):
+    if lead_suit == None:
+        return True
+
+    if card.suit == lead_suit:
+        return True
+
+    elif is_lefty(card, trump) and lead_suit == trump:
+        return True
+
+    else:
+        for icard in hand:
+            if not icard == card and len(hand) > 1:
+                if icard.suit == lead_suit:
+                    return False
+                elif is_lefty(icard, trump) and lead_suit == trump:
+                    return False
+        return True

@@ -2,7 +2,7 @@ from Model import *
 from tkinter import *
 from GUIDecider import *
 from Utilities import *
-from AIDecider import AIDecider
+from RandomDecider import RandomDecider
 
 class GUIManager():
     def __init__(self):
@@ -21,7 +21,7 @@ class GUIManager():
         self.hand_canvas.grid(row=1, column=0)
         self.action_canvas.grid(row=1, column=1)
 
-        self.players = [GUIDecider(id=0,team=0, mgr=self), AIDecider(id=1,team=1, mgr=self), AIDecider(id=2,team=0, mgr=self), AIDecider(id=3,team=1, mgr=self)]
+        self.players = [RandomDecider(id=0,team=0, mgr=self), RandomDecider(id=1,team=1, mgr=self), RandomDecider(id=2,team=0, mgr=self), RandomDecider(id=3,team=1, mgr=self)]
 
     def render_game_win(self, winners, team_scores):
         list = self.root.grid_slaves()
