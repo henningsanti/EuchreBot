@@ -41,14 +41,8 @@ class RandomDecider(GUIPlayer):
         lead_card = None if len(field) == 0 else field[0][1]
 
         for card in self.hand:
-            if validate_play_card(lead_suit=lead_suit, card=card, trump=self.game_state.trump, hand=self.hand):
+            if validate_play_card(lead_card=lead_card, card=card, trump=self.game_state.trump, hand=self.hand):
                 my_list.append(card)
-
-        print('-----TEST-------')
-        print('Trump: ', self.game_state.trump)
-        print('Lead suit: ', lead_suit)
-        print('Hand: ', self.hand)
-        print(my_list)
 
         choice = random.randint(0,len(my_list)-1)
         return my_list[choice]

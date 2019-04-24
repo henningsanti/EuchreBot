@@ -137,14 +137,12 @@ class GUIDecider(GUIPlayer):
     def play_card(self, field):
         super().play_card(field)
 
-        self.lead_card = None
-        if len(field) > 0:
-            self.lead_card = field[0][1]
+        lead_card = None if len(field) == 0 else field[0][1]
 
-        # Bing button allows you to play a random card for testing purposes
-        self.bingbingbing = Button(self.action_canvas, bg='white', text='Bing!', font=BUTTON_FONT, command=lambda: self.bing())
-        self.bingbingbing.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
-        self.action_canvas.create_window((100,80), window=self.bingbingbing)
+        # # Bing button allows you to play a random card for testing purposes
+        # self.bingbingbing = Button(self.action_canvas, bg='white', text='Bing!', font=BUTTON_FONT, command=lambda: self.bing())
+        # self.bingbingbing.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
+        # self.action_canvas.create_window((100,80), window=self.bingbingbing)
 
         self.hand_canvas.tag_bind('card-in-hand', '<Button-1>', self.play_this_card)
 
