@@ -137,11 +137,9 @@ class GUIDecider(GUIPlayer):
     def play_card(self, field):
         super().play_card(field)
 
-        self.lead_suit = None
-        if len(field) > 0:
-            self.lead_suit = field[0][1].suit
+        lead_card = None if len(field) == 0 else field[0][1]
 
-        # Bing button allows you to play a random card for testing purposes
+        # # Bing button allows you to play a random card for testing purposes
         # self.bingbingbing = Button(self.action_canvas, bg='white', text='Bing!', font=BUTTON_FONT, command=lambda: self.bing())
         # self.bingbingbing.config(height=BTN_CONFIG['height'], width=BTN_CONFIG['width'])
         # self.action_canvas.create_window((100,80), window=self.bingbingbing)
@@ -159,33 +157,7 @@ class GUIDecider(GUIPlayer):
     def play_this_card(self, event):
         card_id = event.widget.find_closest(event.x, event.y)[0]
         self.card_to_play = self.hand_ids[str(card_id)]
-        print(self.game_state.trump)
-
-        if self.lead_suit == None:
-            self.selected = True
-            return
-
-        if self.card_to_play.suit == self.lead_suit:
-            self.selected = True
-
-        elif is_lefty(self.card_to_play, self.game_state.trump) and self.lead_suit == self.game_state.trump:
-            self.selected = True
-
-        else:
-            for card in self.hand:
-                if not card == self.card_to_play and len(self.hand) > 1:
-                    if card.suit == self.lead_suit:
-                        self.selected = False
-                        break
-
-                    elif is_lefty(card, self.game_state.trump) and self.lead_suit == self.game_state.trump:
-                        self.selected = False
-                        break
-
-                    else:
-                        self.selected = True
-                else:
-                    self.selected = True
+        self.selected = validate_play_card(lead_card=self.lead_card, card=self.card_to_play, trump=self.game_state.trump, hand=self.hand)
 
     def swap_this_card(self, event):
         card_id = event.widget.find_closest(event.x, event.y)[0]

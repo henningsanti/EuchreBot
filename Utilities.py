@@ -13,7 +13,8 @@ BTN_CONFIG = {
 SUITS = {'h' : 'Hearts',
          'd' : 'Diamonds',
          'c' : 'Clubs',
-         's' : 'Spades'}
+         's' : 'Spades'
+}
 
 SLEEPTIME = 0.5
 
@@ -40,21 +41,22 @@ def is_lefty(card, trump):
     else:
         return False
 
-def validate_play_card(lead_suit, card, trump, hand):
-    if lead_suit == None:
+def validate_play_card(lead_card, card, trump, hand):
+
+    if lead_card == None:
         return True
 
-    if card.suit == lead_suit:
-        return True
+    lead_suit = lead_card.suit if not is_lefty(lead_card, trump) else trump
+    card_suit = card.suit if not is_lefty(card, trump) else trump
 
-    elif is_lefty(card, trump) and lead_suit == trump:
+    if card_suit == lead_suit:
         return True
 
     else:
-        for icard in hand:
-            if not icard == card and len(hand) > 1:
-                if icard.suit == lead_suit:
+        for c in hand:
+            if not c == card and len(hand) > 1:
+                if c.suit == lead_suit:
                     return False
-                elif is_lefty(icard, trump) and lead_suit == trump:
+                elif is_lefty(c, trump) and lead_suit == trump:
                     return False
         return True
