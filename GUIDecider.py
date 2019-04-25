@@ -137,7 +137,7 @@ class GUIDecider(GUIPlayer):
     def play_card(self, field):
         super().play_card(field)
 
-        lead_card = None if len(field) == 0 else field[0][1]
+        self.lead_card = None if len(field) == 0 else field[0][1]
 
         # # Bing button allows you to play a random card for testing purposes
         # self.bingbingbing = Button(self.action_canvas, bg='white', text='Bing!', font=BUTTON_FONT, command=lambda: self.bing())
