@@ -226,7 +226,7 @@ class Match:
     def __init__(self):
         self.manager = GUIManager()
         self.players = self.manager.players
-        self.team_scores = [9,9]
+        self.team_scores = [0,0]
         self.dealer_id = 0
 
     def start_match(self):

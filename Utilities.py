@@ -16,7 +16,7 @@ SUITS = {'h' : 'Hearts',
          's' : 'Spades'
 }
 
-SLEEPTIME = 0.5
+SLEEPTIME = 1.5
 
 INFO_FONT = ("Helvetica", 12)
 BUTTON_FONT = ("Helvetica", 10)
@@ -42,7 +42,6 @@ def is_lefty(card, trump):
         return False
 
 def validate_play_card(lead_card, card, trump, hand):
-
     if lead_card == None:
         return True
 
@@ -54,9 +53,8 @@ def validate_play_card(lead_card, card, trump, hand):
 
     else:
         for c in hand:
+            c_suit = c.suit if not is_lefty(c, trump) else trump
             if not c == card and len(hand) > 1:
-                if c.suit == lead_suit:
-                    return False
-                elif is_lefty(c, trump) and lead_suit == trump:
+                if c_suit == lead_suit:
                     return False
         return True
