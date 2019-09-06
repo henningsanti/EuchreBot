@@ -1,0 +1,8 @@
+1. Get super comfortable with codebase by implementing game runner that just prints events and outcome into a file
+2. Implement the basic AI using a heuristics table to make decisions
+3. Figure out machine learning plan
+4. Build machine learning data set
+5. Train the model
+7. Test the model
+8. Build web application so that people can play against bots
+9. Try multiplayer on web application
