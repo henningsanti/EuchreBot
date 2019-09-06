@@ -105,7 +105,7 @@ class Round:
                     self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
                 self.state.trump = top_card.suit
                 dealer_decision = self.players[self.state.dealer_id].swap_card(top_card)
-                print(bidder, self.state.dealer_id, dealer_decision)
+
                 self.players[self.state.dealer_id].hand.remove(dealer_decision)
                 self.players[self.state.dealer_id].hand.append(top_card)
                 return True
@@ -226,7 +226,7 @@ class Match:
     def __init__(self):
         self.manager = GUIManager()
         self.players = self.manager.players
-        self.team_scores = [9,9]
+        self.team_scores = [0,0]
         self.dealer_id = 0
 
     def start_match(self):
