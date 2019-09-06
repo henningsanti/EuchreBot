@@ -6,3 +6,7 @@
 7. Test the model
 8. Build web application so that people can play against bots
 9. Try multiplayer on web application
+
+Juan's availability: Monday through Thursday after 5:30 pm CST or Sundays anytime after 2pm
+
+Weekly meeting: Monday 5:30 pm
