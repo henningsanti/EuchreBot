@@ -2,11 +2,13 @@ from tkinter import *
 from Utilities import *
 
 class GUIPlayer():
-    def __init__(self, id, team, mgr):
+    def __init__(self, id, team, mgr, decider):
         self.id = id
         self.team = team
         self.hand = []
         self.game_state = None
+        self.decider = decider
+        self.decider.setPlayer(self)
 
         self.field_canvas = mgr.field_canvas
         self.hand_canvas = mgr.hand_canvas
@@ -70,6 +72,8 @@ class GUIPlayer():
         self.top_card = self.field_canvas.create_rectangle(card_coords, fill = "white")
         self.top_card_txt = self.field_canvas.create_text(txt_coords, text=top_card.__str__(), font=CARD_FONT)
         self.root.update()
+        
+        return self.decider.bid(top_card)
 
     def second_bid(self, top_card):
         self.refresh_canvases()
@@ -80,6 +84,8 @@ class GUIPlayer():
         self.field_canvas.create_text(txt_coords, text='Pick a Trump Suit.', font=BIG_FONT)
 
         self.root.update()
+
+        return self.decider.second_bid(top_card)
 
     def swap_card(self, top_card):
         self.refresh_canvases()
@@ -92,6 +98,8 @@ class GUIPlayer():
         self.top_card = self.field_canvas.create_rectangle(card_coords, fill = "white")
         self.top_card_txt = self.field_canvas.create_text(txt_coords, text=top_card.__str__(), font=CARD_FONT)
         self.root.update()
+
+        return self.decider.swap_card(top_card)
 
     def play_card(self, field):
         self.refresh_canvases()
@@ -112,3 +120,5 @@ class GUIPlayer():
             self.field_canvas.create_text(txt_coords, text=field[i].__str__(), font=CARD_FONT)
 
         self.root.update()
+
+        return self.decider.play_card(field)

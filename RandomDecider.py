@@ -4,13 +4,11 @@ from Utilities import *
 import time
 import random
 
-class RandomDecider(GUIPlayer):
-    def __init__(self, id, team, mgr):
-        super().__init__(id, team, mgr)
+class RandomDecider():
+    def setPlayer(self, player):
+        self.player = player
 
     def bid(self, top_card):
-        super().bid(top_card)
-
         time.sleep(SLEEPTIME)
 
         bid = True if random.randint(0,1) == 0 else False
@@ -19,8 +17,6 @@ class RandomDecider(GUIPlayer):
         return BidDecision(bid=bid, alone=alone)
 
     def second_bid(self, top_card):
-        super().second_bid(top_card)
-
         time.sleep(SLEEPTIME)
 
         my_suits = list(SUITS.keys())
@@ -33,26 +29,20 @@ class RandomDecider(GUIPlayer):
         return SecondBidDecision(selected=selected, trump=trump, alone=alone)
 
     def play_card(self, field):
-        super().play_card(field)
-
         time.sleep(SLEEPTIME)
 
         my_list = []
         lead_card = None if len(field) == 0 else field[0][1]
 
-        for card in self.hand:
-            if validate_play_card(lead_card=lead_card, card=card, trump=self.game_state.trump, hand=self.hand):
+        for card in self.player.hand:
+            if validate_play_card(lead_card=lead_card, card=card, trump=self.player.game_state.trump, hand=self.player.hand):
                 my_list.append(card)
 
         choice = random.randint(0,len(my_list)-1)
         return my_list[choice]
 
     def swap_card(self, top_card):
-        super().swap_card(top_card)
-
         time.sleep(SLEEPTIME)
 
         choice = random.randint(0,4)
-
-
-        return self.hand[choice]
+        return self.player.hand[choice]

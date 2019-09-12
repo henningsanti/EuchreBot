@@ -1,3 +1,4 @@
+0. Implement manager and test no GUI games
 1. Get super comfortable with codebase by implementing game runner that just prints events and outcome into a file
 2. Implement the basic AI using a heuristics table to make decisions
 3. Figure out machine learning plan
