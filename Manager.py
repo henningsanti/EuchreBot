@@ -1,5 +1,22 @@
 from RandomDecider import RandomDecider
+from Player import Player
+import logging
+
+logging.basicConfig(filename='game.log', level=logging.INFO, format='%(message)s')
 
 class Manager:
     def __init__(self):
-        self.players = [RandomDecider(id=0,team=0, mgr=self, player=Player), RandomDecider(id=1,team=1, mgr=self), RandomDecider(id=2,team=0, mgr=self), RandomDecider(id=3,team=1, mgr=self)]
+        self.players = [
+            Player(id=0, team= 0, decider=RandomDecider()),
+            Player(id=1, team= 1, decider=RandomDecider()),
+            Player(id=2, team= 0, decider=RandomDecider()),
+            Player(id=3, team= 1, decider=RandomDecider())
+        ]
+
+    def handle_trick_win(self, winner, field, index):
+        pass
+        # logging.info('Trick won: ' + str(winner.team))
+
+    def handle_game_win(self, winners, team_scores):
+        logging.info('Game won: ' + str(team_scores))
+        quit()

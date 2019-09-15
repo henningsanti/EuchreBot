@@ -1,12 +1,27 @@
-0. Implement manager and test no GUI games
-1. Get super comfortable with codebase by implementing game runner that just prints events and outcome into a file
-2. Implement the basic AI using a heuristics table to make decisions
-3. Figure out machine learning plan
-4. Build machine learning data set
-5. Train the model
-7. Test the model
-8. Build web application so that people can play against bots
-9. Try multiplayer on web application
+(9/15/2019) 0. Implement manager and test no GUI games
+(9/15/2019) 1. Get super comfortable with codebase by implementing game runner that just prints events and outcome into a file
+(--) 2. Implement the basic AI using a heuristics table to make decisions
+(--) 3. Figure out machine learning plan
+(--) 4. Build machine learning data set
+(--) 5. Train the model
+(--) 7. Test the model
+(--) 8. Build web application so that people can play against bots
+(--) 9. Try multiplayer on web application
+
+
+Notes:
+- ending rounds when outcome is inevitable (3-0 dont play 2 more tricks)
+
+
+
+Links:
+  Reinforcement Learning:
+  https://medium.com/applied-data-science/how-to-build-your-own-alphazero-ai-using-python-and-keras-7f664945c188
+
+  EuchreBot
+  https://scholarworks.unr.edu/bitstream/handle/11714/3774/Seelbinder_unr_0139M_11172.pdf?sequence=1&isAllowed=y
+
+
 
 Juan's availability: Monday through Thursday after 5:30 pm CST or Sundays anytime after 2pm
 
