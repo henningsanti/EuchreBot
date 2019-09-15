@@ -16,7 +16,7 @@ SUITS = {'h' : 'Hearts',
          's' : 'Spades'
 }
 
-SLEEPTIME = 1.5
+SLEEPTIME = 0
 
 INFO_FONT = ("Helvetica", 12)
 BUTTON_FONT = ("Helvetica", 10)

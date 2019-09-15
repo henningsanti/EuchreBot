@@ -88,7 +88,7 @@ class Round:
 
         self.state.team_tricks[self.players[winning_card[0]].team] += 1
 
-        self.mgr.render_trick_win(winner=self.players[winning_card[0]], field=field, index=winning_index)
+        self.mgr.handle_trick_win(winner=self.players[winning_card[0]], field=field, index=winning_index)
         return winning_card[0]
 
     def bidding(self):
@@ -223,8 +223,8 @@ class Round:
             return a if hierarchy[card1.value] > hierarchy[card2.value] else b
 
 class Match:
-    def __init__(self):
-        self.manager = GUIManager()
+    def __init__(self, manager):
+        self.manager = manager
         self.players = self.manager.players
         self.team_scores = [0,0]
         self.dealer_id = 0
@@ -236,7 +236,7 @@ class Match:
             self.team_scores[1] += results[1]
 
             if(self.check_end()[0]):
-                self.manager.render_game_win(winners=self.check_end()[1], team_scores=self.team_scores)
+                self.manager.handle_game_win(winners=self.check_end()[1], team_scores=self.team_scores)
 
             self.dealer_id = findLeftOfPlayer(self.dealer_id)
 
