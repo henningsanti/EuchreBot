@@ -27,11 +27,11 @@ class HighConservativeDecider():
         for suit in my_suits:
             bid_decisions[suit] = decide_bid_conservative(self.player.hand, suit)
     
-        for suit, decision in bid_decisions.iteritems():
+        for suit, decision in bid_decisions.items():
             if decision.bid and decision.alone:
                 return SecondBidDecision(selected=True, trump=suit, alone=True)
 
-        for suit, decision in bid_decisions.iteritems():
+        for suit, decision in bid_decisions.items():
             if decision.bid:
                 return SecondBidDecision(selected=True, trump=suit, alone=False)
 
@@ -50,12 +50,8 @@ class HighConservativeDecider():
             if validate_play_card(lead_card=lead_card, card=card, trump=self.player.game_state.trump, hand=self.player.hand):
                 my_list.append(card)
 
-        print('sorting:')
-        print('trump: ', self.player.game_state.trump)
-        print('lead suit: ', lead_suit)
         sorted_cards = sorted(my_list, key=cmp_to_key(Sorter(lead_suit, self.player.game_state.trump).compare_cards))
-        print('sorted list: ', sorted_cards)
-        print('--------------')
+
         return sorted_cards[0]
 
     def swap_card(self, top_card):

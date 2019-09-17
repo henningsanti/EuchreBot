@@ -19,5 +19,4 @@ class Manager:
         # logging.info('Trick won: ' + str(winner.team))
 
     def handle_game_win(self, winners, team_scores):
-        logging.info('Game won: ' + str(team_scores))
-        quit()
+        logging.info('' + str(winners))

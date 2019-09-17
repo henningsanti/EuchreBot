@@ -2,8 +2,10 @@
 (9/15/2019) 1. Get super comfortable with codebase by implementing game runner that just prints events and outcome into a file
 (--) 2. Implement the basic AI using a heuristics table to make decisions
 (9/16/2019)    Implement HighConservativeDecider
+(9/16/2019)    Implemented performance test for HighConservativeDecider with all RandomDeciders
 (--)    Implement unit tests for HighConservativeDecider Sort
 (--)    Implement LowConservativeDecider, deduplicate ConservativeDeciders
+(--)    Set up PostgresDB for data sets
 (--)    Implement complex play_card
 (--)    Implement advanced bid, second_bid
 (--) 3. Figure out machine learning plan

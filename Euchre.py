@@ -237,6 +237,7 @@ class Match:
 
             if(self.check_end()[0]):
                 self.manager.handle_game_win(winners=self.check_end()[1], team_scores=self.team_scores)
+                return
 
             self.dealer_id = findLeftOfPlayer(self.dealer_id)
 
