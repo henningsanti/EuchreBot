@@ -1,6 +1,11 @@
 (9/15/2019) 0. Implement manager and test no GUI games
 (9/15/2019) 1. Get super comfortable with codebase by implementing game runner that just prints events and outcome into a file
 (--) 2. Implement the basic AI using a heuristics table to make decisions
+(9/16/2019)    Implement HighConservativeDecider
+(--)    Implement unit tests for HighConservativeDecider Sort
+(--)    Implement LowConservativeDecider, deduplicate ConservativeDeciders
+(--)    Implement complex play_card
+(--)    Implement advanced bid, second_bid
 (--) 3. Figure out machine learning plan
 (--) 4. Build machine learning data set
 (--) 5. Train the model
