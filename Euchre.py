@@ -8,6 +8,9 @@ class Card:
         self.value = value
         self.suit = suit
 
+    def __eq__(self, other):
+        return self.value == other.value and self.suit == other.suit
+         
     def __str__(self):
         return self.value + ' ' + self.suit
 
