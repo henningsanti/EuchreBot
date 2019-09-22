@@ -9,10 +9,15 @@ class Card:
         self.suit = suit
 
     def __eq__(self, other):
+        if other == None:
+            return False
         return self.value == other.value and self.suit == other.suit
-         
+
     def __str__(self):
         return self.value + ' ' + self.suit
+
+    def __hash__(self):
+        return hash((self.value, self.suit))
 
     __repr__ = __str__
 
