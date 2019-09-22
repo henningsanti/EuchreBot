@@ -1,7 +1,7 @@
 import time
 from DeciderFunctions import *
 
-class HighConservativeDecider():
+class LowConservativeDecider():
     def setPlayer(self, player):
         self.player = player
 
@@ -15,7 +15,7 @@ class HighConservativeDecider():
 
     def play_card(self, field):
         time.sleep(SLEEPTIME)
-        return play_card_simple(self.player.hand, self.player.game_state.trump, field, low=False)
+        return play_card_simple(self.player.hand, self.player.game_state.trump, field, low=True)
 
     def swap_card(self, top_card):
         time.sleep(SLEEPTIME)
