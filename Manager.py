@@ -1,5 +1,7 @@
 from RandomDecider import RandomDecider
 from HighConservativeDecider import HighConservativeDecider
+from LowConservativeDecider import LowConservativeDecider
+from HWCConservativeDecider import HWCConservativeDecider
 from Player import Player
 import logging
 
@@ -8,9 +10,9 @@ logging.basicConfig(filename='game.log', level=logging.INFO, format='%(message)s
 class Manager:
     def __init__(self):
         self.players = [
-            Player(id=0, team= 0, decider=HighConservativeDecider()),
+            Player(id=0, team= 0, decider=HWCConservativeDecider()),
             Player(id=1, team= 1, decider=RandomDecider()),
-            Player(id=2, team= 0, decider=RandomDecider()),
+            Player(id=2, team= 0, decider=HWCConservativeDecider()),
             Player(id=3, team= 1, decider=RandomDecider())
         ]
 

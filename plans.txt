@@ -3,17 +3,20 @@
 (--) 2. Implement the basic AI using a heuristics table to make decisions
 (9/16/2019)    Implement HighConservativeDecider
 (9/16/2019)    Implemented performance test for HighConservativeDecider with all RandomDeciders
-(--)    Implement unit tests for HighConservativeDecider Sort
+(9/22/2019)    Implement unit tests for HighConservativeDecider Sort
 (9/22/2019)    Implement LowConservativeDecider, deduplicate ConservativeDeciders
-(--)    Set up PostgresDB for data sets
-(--)    Implement complex play_card
+(--)    Implement complex play_cards (from Seelbinder)
+(9/22/2019)    a.  Implement HighWithCaution
+(10/21/2019)   b.  Unit test HighWithCaution
 (--)    Implement advanced bid, second_bid
-(--) 3. Figure out machine learning plan
-(--) 4. Build machine learning data set
+(--)    Implement all algorithm combinations
+(--)    Run performance tests
+(--) 3. Backlog unittests (validate_play_card, ...)
+(--) 4. Figure out machine learning plan
 (--) 5. Train the model
-(--) 7. Test the model
-(--) 8. Build web application so that people can play against bots
-(--) 9. Try multiplayer on web application
+(--) 6. Test the model
+(--) 7. Build web application so that people can play against bots
+(--) 8. Try multiplayer on web application
 
 
 Notes:

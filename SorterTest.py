@@ -32,7 +32,7 @@ class TestSorter(unittest.TestCase):
             Card('K', 'h'),
             Card('K', 'd'),
             Card('J', 'd'),
-            Card('Q', 'c'),
+            Card('Q', 'd'),
             Card('A', 'c')
         ]
 
@@ -40,8 +40,8 @@ class TestSorter(unittest.TestCase):
             Card('J', 'd'),
             Card('K', 'h'),
             Card('A', 'c'),
-            Card('Q', 'c'),
-            Card('K', 'd')
+            Card('K', 'd'),
+            Card('Q', 'd')
         ]
 
         sorted_cards = sorted(hand, key=cmp_to_key(Sorter(lead_suit, trump).compare_cards))
