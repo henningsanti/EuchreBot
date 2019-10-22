@@ -7,15 +7,16 @@
 (9/22/2019)    Implement LowConservativeDecider, deduplicate ConservativeDeciders
 (--)    Implement complex play_cards (from Seelbinder)
 (9/22/2019)    a.  Implement HighWithCaution
-(--)    b.  Unit test HighWithCaution
+(10/21/2019)   b.  Unit test HighWithCaution
 (--)    Implement advanced bid, second_bid
 (--)    Implement all algorithm combinations
 (--)    Run performance tests
-(--) 3. Figure out machine learning plan
+(--) 3. Backlog unittests (validate_play_card, ...)
+(--) 4. Figure out machine learning plan
 (--) 5. Train the model
-(--) 7. Test the model
-(--) 8. Build web application so that people can play against bots
-(--) 9. Try multiplayer on web application
+(--) 6. Test the model
+(--) 7. Build web application so that people can play against bots
+(--) 8. Try multiplayer on web application
 
 
 Notes:

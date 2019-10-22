@@ -80,14 +80,15 @@ def compare_non_trump(card1, card2, lead_suit):
                 'T': 1,
                 '9': 0}
 
-    if lead_suit == None:
-        return base_compare(card1, card2, hierarchy)
+    if not card1.suit == card2.suit:
+        if card1.suit == lead_suit:
+            return -1
 
-    if not card1.suit == lead_suit:
-        return 1
+        elif card2.suit == lead_suit:
+            return 1
 
-    elif not card2.suit == lead_suit:
-        return -1
+        else:
+            return base_compare(card1, card2, hierarchy)
 
     else:
         return base_compare(card1, card2, hierarchy)
