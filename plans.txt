@@ -10,7 +10,7 @@
 (10/21/2019)    b.  Unit test HighWithCaution
 (--)           Implement Markov-based deciders
 (10/24/2019)    a. Add in-round cards played memory
-(--)            b. Implement heuristics calculator
+(10/24/2019)    b. Implement heuristics calculator and unit test
 (--)            c. Implement MDP version 1
 (--)            d. Implement UF
 (--)            e. Implement HUF
