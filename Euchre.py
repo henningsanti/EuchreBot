@@ -3,37 +3,8 @@ from Model import *
 from GUI import GUIManager
 from Utilities import *
 
-class Card:
-    def __init__(self, value=None, suit=None):
-        self.value = value
-        self.suit = suit
-
-    def __eq__(self, other):
-        if other == None:
-            return False
-        return self.value == other.value and self.suit == other.suit
-
-    def __str__(self):
-        return self.value + ' ' + self.suit
-
-    def __hash__(self):
-        return hash((self.value, self.suit))
-
-    __repr__ = __str__
-
 class Dealer:
     def __init__(self):
-        c_values = ['A',
-                    'K',
-                    'Q',
-                    'J',
-                    'T',
-                    '9']
-        c_suits = ['d',
-                   'h',
-                   'c',
-                   's']
-
         self.deck = [Card(value=x, suit=y) for x in c_values for y in c_suits]
         random.shuffle(self.deck)
 
