@@ -95,6 +95,7 @@ class Round:
                 break
 
         self.state.team_tricks[self.players[winning_card[0]].team] += 1
+        self.state.graveyard.add_trick(field)
 
         self.mgr.handle_trick_win(winner=self.players[winning_card[0]], field=field, index=winning_index)
         return winning_card[0]
@@ -111,10 +112,13 @@ class Round:
                 self.state.making_team = self.players[bidder].team
                 if bid_result.alone:
                     self.state.alone = findLeftOfPlayer(findLeftOfPlayer(bidder))
+                
                 self.state.trump = top_card.suit
-                dealer_decision = self.players[self.state.dealer_id].swap_card(top_card)
+                swapped_card = self.players[self.state.dealer_id].swap_card(top_card)
 
-                self.players[self.state.dealer_id].hand.remove(dealer_decision)
+                self.players[self.state.dealer_id].hand.remove(swapped_card)
+                self.state.graveyard.set_swapped_card(swapped_card)
+
                 self.players[self.state.dealer_id].hand.append(top_card)
                 return True
 

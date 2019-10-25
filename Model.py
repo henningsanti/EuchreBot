@@ -1,3 +1,5 @@
+from Graveyard import Graveyard
+
 class GameState:
     def __init__(self, dealer_id, team_scores):
         self.dealer_id = dealer_id
@@ -6,6 +8,7 @@ class GameState:
         self.trump = None
         self.alone = None
         self.making_team = None
+        self.graveyard = Graveyard(dealer_id)
 
 class BidDecision:
     def __init__(self, bid, alone):

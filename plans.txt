@@ -5,9 +5,15 @@
 (9/16/2019)    Implemented performance test for HighConservativeDecider with all RandomDeciders
 (9/22/2019)    Implement unit tests for HighConservativeDecider Sort
 (9/22/2019)    Implement LowConservativeDecider, deduplicate ConservativeDeciders
-(--)    Implement complex play_cards (from Seelbinder)
-(9/22/2019)    a.  Implement HighWithCaution
-(10/21/2019)   b.  Unit test HighWithCaution
+(10/21/2019)   Implement complex play_cards (from Seelbinder)
+(9/22/2019)     a.  Implement HighWithCaution
+(10/21/2019)    b.  Unit test HighWithCaution
+(--)           Implement Markov-based deciders
+(10/24/2019)    a. Add in-round cards played memory
+(--)            b. Implement heuristics calculator
+(--)            c. Implement MDP version 1
+(--)            d. Implement UF
+(--)            e. Implement HUF
 (--)    Implement advanced bid, second_bid
 (--)    Implement all algorithm combinations
 (--)    Run performance tests
