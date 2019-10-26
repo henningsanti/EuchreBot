@@ -1,0 +1,21 @@
+Notes
+
+
+ON JUANTI MDP -----------------------------------------------------------
+
+if we are about to play high, we know:
+  1. card we will play
+  2. "hidden" cards
+  3. how many opponents play after us
+
+so, to affirm that we should play our card, we need to have some confidence that we
+can beat our opponents that haven't played.
+
+case 1:  1 opponent after us
+
+-     x: our best card
+- set O: Opponent hand
+- set H: hidden cards
+- set W: cards that win against x
+- set B: Intersection of sets H and W
+- find probability that 1 or more cards in B are in O

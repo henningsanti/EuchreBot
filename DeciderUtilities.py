@@ -22,7 +22,7 @@ def calculate_heuristics(trump, lead_suit):
             if suit == trump:
                 multiplier = 100
             result[Card(value, suit)] = base_scores[value]*multiplier
-    
+
     if not lead_suit == None and not lead_suit == trump:
         for value in c_values:
             result[Card(value, lead_suit)] *= 10
@@ -36,8 +36,25 @@ def calculate_heuristics(trump, lead_suit):
             if is_lefty(card, trump):
                 result[card] = 1000
                 break
-    
+
     return result
+
+# MARKOV RETARDED
+# def calculate_points_left_over(played_cards, trump, lead_suit, field):
+#     heuristics = calculate_heuristics(trump, lead_suit)
+#
+#     all_points = sum(heuristics.values())
+#     used_points = sum([heuristics[card] for card in played_cards]) + \
+#                   sum([heuristics[card[1]] for card in field])
+#
+#     return all_points - used_points
+#
+# def calculate_points_in_hand(trump, lead_suit, hand):
+#     return sum([calculate_heuristics(trump, lead_suit)[card] for card in hand])
+
+# TODO: implement me
+def markov_decide(hand, trump, player_id, graveyard):
+    pass
 
 def base_compare(card1, card2, hierarchy):
     return -1 if hierarchy[card1.value] > hierarchy[card2.value] else 1

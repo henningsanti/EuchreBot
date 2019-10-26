@@ -11,9 +11,13 @@
 (--)           Implement Markov-based deciders
 (10/24/2019)    a. Add in-round cards played memory
 (10/24/2019)    b. Implement heuristics calculator and unit test
-(--)            c. Implement MDP version 1
-(--)            d. Implement UF
-(--)            e. Implement HUF
+(10/26/2019)    c. Implement Seelbinder MDP ---> Actually this is retarded
+
+
+(--)            c2. Implement winning probability calculator
+(--)            c3. Implement Juanti MDP
+(--)            d. Implement HUF
+(--)    Add python packaging
 (--)    Implement advanced bid, second_bid
 (--)    Implement all algorithm combinations
 (--)    Run performance tests
